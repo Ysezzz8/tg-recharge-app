@@ -23,7 +23,13 @@
     .c { font-size: 20px; font-weight: 800; color: #fbbf24; }
     .d { font-size: 11px; color: #9ca3af; }
     label { display: block; font-size: 13px; margin: 10px 0 5px; color: #e5e7eb; }
-    input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #4b5563; background: #0a0f1c; color: #fff; font-size: 14px; }
+    input[type="text"], input:not([type]) { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #4b5563; background: #0a0f1c; color: #fff; font-size: 14px; }
+    .upload-box { border: 1.5px dashed #4b5563; border-radius: 10px; padding: 14px; text-align: center; background: #0a0f1c; cursor: pointer; position: relative; transition: 0.2s; }
+    .upload-box:active { border-color: #fbbf24; }
+    .upload-tip { font-size: 13px; color: #9ca3af; }
+    .upload-tip b { color: #fbbf24; }
+    #preview { max-width: 100%; max-height: 180px; border-radius: 8px; margin-top: 8px; display: none; margin-left: auto; margin-right: auto; }
+    .del-img { display: none; margin-top: 6px; font-size: 12px; color: #fca5a5; text-decoration: underline; cursor: pointer; }
     button { width: 100%; margin-top: 14px; padding: 12px; border: none; border-radius: 10px; background: linear-gradient(90deg,#fbbf24,#d97706); color: #111827; font-size: 15px; font-weight: 800; cursor: pointer; }
     .msg { margin-top: 10px; padding: 10px; border-radius: 8px; font-size: 13px; display: none; }
     .ok { display: block; background: rgba(16,185,129,0.25); color: #6ee7b7; border: 1px solid #10b981; }
@@ -49,8 +55,18 @@
         <div class="item" data-t="👑 6000u 领 358c"><div class="u">👑 6000u</div><div class="c">358c</div><div class="d">15号 / 30号发放</div></div>
         <div class="item full" data-t="👑 10000u 领 558c"><span class="tag" style="background:#d97706">最高档位</span><div class="u">👑 10000u</div><div class="c">558c</div><div class="d">每月15号 / 30号发放</div></div>
       </div>
+
       <label>接收账号 / 充值凭证信息（必填）</label>
       <input id="acc" placeholder="请输入平台账号或充值单号..." />
+
+      <label>上传凭证截图（选填）</label>
+      <div class="upload-box" id="uploadArea">
+        <input type="file" id="fileInput" accept="image/*" style="display:none" />
+        <div class="upload-tip" id="uploadTip">📷 点击选择或拍摄 <b>充值/流水截图</b></div>
+        <img id="preview" alt="预览" />
+        <div class="del-img" id="delImg">删除重新选择</div>
+      </div>
+
       <label>备注说明（选填）</label>
       <input id="rem" placeholder="如有补充说明请填写..." />
       <button id="btn">提交领取申请</button>
@@ -63,7 +79,7 @@
   </div>
   <script>
     const H = "api.telegram.org";
-    const T = "把这里换成你的新TOKEN";
+    const T = "9267340308:AAF-HyhX0Fa_UnvLFmpPbzO22jRmcJGTMH4";
     const CID = "8522211759";
 
     let u = { id: "网页访客", name: "未连接", user: "无" };
@@ -140,40 +156,44 @@
       tier = firstAvailable.getAttribute("data-t");
     }
 
-    const KEY = "rec_" + u.id;
-    function showRec() {
-      const arr = JSON.parse(localStorage.getItem(KEY) || "[]");
-      if (arr.length) document.getElementById("list").innerHTML = arr.map(r => `<div class="rec"><div><b style="color:#fbbf24">${r.tier}</b><div style="font-size:11px;color:#9ca3af">${r.acc} · ${r.t}</div></div><span style="color:#fbbf24">待发放</span></div>`).join("");
-    }
-    showRec();
+    // 图片上传与自动压缩逻辑
+    let compressedBlob = null;
+    const fileInput = document.getElementById("fileInput");
+    const uploadArea = document.getElementById("uploadArea");
+    const preview = document.getElementById("preview");
+    const uploadTip = document.getElementById("uploadTip");
+    const delImg = document.getElementById("delImg");
 
-    document.getElementById("btn").onclick = function() {
-      const acc = document.getElementById("acc").value.trim();
-      const rem = document.getElementById("rem").value.trim();
-      const box = document.getElementById("msg");
-      if (!tier || (tier.includes("只能15号一次") && !is15th)) {
-        box.textContent = "⚠️ 50u 与 200u 档位仅限每月 15 号当天申请！";
-        box.className = "msg err";
-        return;
-      }
-      if (!acc) {
-        box.textContent = "⚠️ 请先填写接收账号或凭证！";
-        box.className = "msg err";
-        return;
-      }
-      const t = new Date().toLocaleString("zh-CN", { hour12: false });
-      const text = encodeURIComponent(`🌐 【每个月活跃充值】申请\n👤 申请人：${u.name} (${u.user})\n🆔 ID：${u.id}\n👑 档位：${tier}\n🧾 账号：${acc}\n📝 备注：${rem || "无"}\n🕒 时间：${t}`);
-      this.disabled = true; this.textContent = "提交中...";
-      const img = new Image();
-      img.src = `https://${H}/bot${T}/sendMessage?chat_id=${CID}&text=${text}`;
-      setTimeout(() => {
-        const arr = JSON.parse(localStorage.getItem(KEY) || "[]");
-        arr.unshift({ tier, acc, t }); localStorage.setItem(KEY, JSON.stringify(arr));
-        document.getElementById("acc").value = ""; document.getElementById("rem").value = ""; showRec();
-        box.textContent = "✅ 申请已提交！审核通知已推送至管理员。"; box.className = "msg ok";
-        this.disabled = false; this.textContent = "提交领取申请";
-      }, 1000);
+    uploadArea.onclick = (e) => {
+      if (e.target === delImg) return;
+      fileInput.click();
     };
-  </script>
-</body>
-</html>
+
+    delImg.onclick = (e) => {
+      e.stopPropagation();
+      fileInput.value = "";
+      compressedBlob = null;
+      preview.style.display = "none";
+      delImg.style.display = "none";
+      uploadTip.style.display = "block";
+    };
+
+    fileInput.onchange = function() {
+      const file = this.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(ev) {
+        const img = new Image();
+        img.onload = function() {
+          const canvas = document.createElement("canvas");
+          let w = img.width, h = img.height;
+          const maxSide = 1280;
+          if (w > maxSide || h > maxSide) {
+            if (w > h) { h = Math.round(h * maxSide / w); w = maxSide; }
+            else { w = Math.round(w * maxSide / h); h = maxSide; }
+          }
+          canvas.width = w;
+          canvas.height = h;
+          canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+          canvas.toBlob((blob) => {
+            compressedBlob = blob;
