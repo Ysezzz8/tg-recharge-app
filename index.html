@@ -2,37 +2,35 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
   <title>🌐 每个月活跃充值</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, sans-serif; }
-    body { background: #0b1120 url('./bg.jpg') center top/cover no-repeat; color: #f9fafb; padding: 16px; min-height: 100vh; }
-    .box { max-width: 480px; margin: 0 auto; }
-    .card { background: rgba(17,24,39,0.88); border: 1px solid rgba(251,191,36,0.35); border-radius: 14px; padding: 16px; margin-bottom: 14px; }
-    .top { display: flex; justify-content: space-between; font-size: 13px; color: #d1d5db; margin-bottom: 8px; }
-    .uid { background: rgba(245,158,11,0.2); color: #fbbf24; padding: 2px 8px; border-radius: 12px; }
-    h1 { font-size: 20px; color: #fbbf24; margin-bottom: 4px; }
-    .rule { background: rgba(245,158,11,0.15); border-left: 3px solid #f59e0b; padding: 8px 10px; font-size: 12px; color: #fde68a; margin-bottom: 14px; border-radius: 4px; }
-    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
-    .item { background: rgba(10,15,28,0.8); border: 1.5px solid #374151; border-radius: 10px; padding: 12px 8px; text-align: center; position: relative; cursor: pointer; }
-    .item.full { grid-column: span 2; }
-    .item.active { border-color: #fbbf24; background: rgba(245,158,11,0.25); }
-    .item.disabled { opacity: 0.4; cursor: not-allowed; border-color: #1f2937; }
-    .tag { position: absolute; top: -7px; right: 6px; background: #dc2626; color: #fff; font-size: 10px; padding: 1px 5px; border-radius: 4px; }
-    .u { font-size: 14px; font-weight: 700; }
-    .c { font-size: 20px; font-weight: 800; color: #fbbf24; }
-    .d { font-size: 11px; color: #9ca3af; }
-    .lbl { display: block; font-size: 13px; margin: 10px 0 5px; color: #e5e7eb; }
-    input[type="text"], input:not([type]) { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #4b5563; background: #0a0f1c; color: #fff; font-size: 14px; }
-    .up-wrap { position: relative; border: 1.5px dashed #4b5563; border-radius: 10px; padding: 14px; text-align: center; background: #0a0f1c; }
-    .up-wrap input[type="file"] { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 2; }
-    #preview { max-width: 100%; max-height: 160px; border-radius: 8px; margin: 8px auto 0; display: none; }
-    #delImg { display: none; margin-top: 8px; font-size: 12px; color: #fca5a5; text-decoration: underline; cursor: pointer; position: relative; z-index: 3; }
-    button { width: 100%; margin-top: 14px; padding: 12px; border: none; border-radius: 10px; background: linear-gradient(90deg,#fbbf24,#d97706); color: #111827; font-size: 15px; font-weight: 800; cursor: pointer; }
-    .msg { margin-top: 10px; padding: 10px; border-radius: 8px; font-size: 13px; display: none; }
-    .ok { display: block; background: rgba(16,185,129,0.25); color: #6ee7b7; border: 1px solid #10b981; }
-    .err { display: block; background: rgba(239,68,68,0.25); color: #fca5a5; border: 1px solid #ef4444; }
-    .rec { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #374151; font-size: 13px; }
+    *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,sans-serif}
+    body{background:#0b1120 url('./bg.jpg') center top/cover no-repeat;color:#f9fafb;padding:16px;min-height:100vh}
+    .box{max-width:480px;margin:0 auto}
+    .card{background:rgba(17,24,39,.88);border:1px solid rgba(251,191,36,.35);border-radius:14px;padding:16px;margin-bottom:14px}
+    .top{display:flex;justify-content:space-between;font-size:13px;color:#d1d5db;margin-bottom:8px}
+    .uid{background:rgba(245,158,11,.2);color:#fbbf24;padding:2px 8px;border-radius:12px}
+    h1{font-size:20px;color:#fbbf24;margin-bottom:4px}
+    .rule{background:rgba(245,158,11,.15);border-left:3px solid #f59e0b;padding:8px 10px;font-size:12px;color:#fde68a;margin-bottom:14px;border-radius:4px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+    .item{background:rgba(10,15,28,.8);border:1.5px solid #374151;border-radius:10px;padding:12px 8px;text-align:center;position:relative;cursor:pointer}
+    .item.full{grid-column:span 2}
+    .item.active{border-color:#fbbf24;background:rgba(245,158,11,.25)}
+    .item.disabled{opacity:.4;cursor:not-allowed;border-color:#1f2937}
+    .tag{position:absolute;top:-7px;right:6px;background:#dc2626;color:#fff;font-size:10px;padding:1px 5px;border-radius:4px}
+    .u{font-size:14px;font-weight:700}.c{font-size:20px;font-weight:800;color:#fbbf24}.d{font-size:11px;color:#9ca3af}
+    .lbl{display:block;font-size:13px;margin:10px 0 5px;color:#e5e7eb}
+    .ipt{width:100%;padding:10px;border-radius:8px;border:1px solid #4b5563;background:#0a0f1c;color:#fff;font-size:14px}
+    .up{display:block;border:1.5px dashed #4b5563;border-radius:10px;padding:14px;text-align:center;background:#0a0f1c;position:relative;overflow:hidden}
+    #f{position:absolute;left:0;top:0;width:100%;height:100%;opacity:0;z-index:2}
+    #pre{max-width:100%;max-height:160px;border-radius:8px;margin:8px auto 0;display:none;position:relative;z-index:1}
+    #del{display:none;margin-top:8px;font-size:12px;color:#fca5a5;text-decoration:underline;position:relative;z-index:3}
+    button{width:100%;margin-top:14px;padding:12px;border:none;border-radius:10px;background:linear-gradient(90deg,#fbbf24,#d97706);color:#111827;font-size:15px;font-weight:800;cursor:pointer}
+    .msg{margin-top:10px;padding:10px;border-radius:8px;font-size:13px;display:none}
+    .ok{display:block;background:rgba(16,185,129,.25);color:#6ee7b7;border:1px solid #10b981}
+    .err{display:block;background:rgba(239,68,68,.25);color:#fca5a5;border:1px solid #ef4444}
+    .rec{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #374151;font-size:13px}
   </style>
 </head>
 <body>
@@ -45,8 +43,8 @@
     <div class="card">
       <div class="rule">📅 每月 <b>15号、30号</b> 统一发放<br>⚠️ <b>50u</b> 与 <b>200u</b> 档位每月仅限 <b>15号</b> 申请一次</div>
       <div class="grid">
-        <div class="item" data-only15="1" data-t="👑 50u 领 38c (只能15号一次)"><span class="tag">只能15号一次</span><div class="u">👑 50u</div><div class="c">38c</div><div class="d">每月15号限领一次</div></div>
-        <div class="item" data-only15="1" data-t="👑 200u 领 58c (只能15号一次)"><span class="tag">只能15号一次</span><div class="u">👑 200u</div><div class="c">58c</div><div class="d">每月15号限领一次</div></div>
+        <div class="item" data-o="1" data-t="👑 50u 领 38c (只能15号一次)"><span class="tag">只能15号一次</span><div class="u">👑 50u</div><div class="c">38c</div><div class="d">每月15号限领一次</div></div>
+        <div class="item" data-o="1" data-t="👑 200u 领 58c (只能15号一次)"><span class="tag">只能15号一次</span><div class="u">👑 200u</div><div class="c">58c</div><div class="d">每月15号限领一次</div></div>
         <div class="item" data-t="👑 500u 领 88c"><div class="u">👑 500u</div><div class="c">88c</div><div class="d">15号 / 30号发放</div></div>
         <div class="item" data-t="👑 1500u 领 158c"><div class="u">👑 1500u</div><div class="c">158c</div><div class="d">15号 / 30号发放</div></div>
         <div class="item" data-t="👑 3000u 领 238c"><div class="u">👑 3000u</div><div class="c">238c</div><div class="d">15号 / 30号发放</div></div>
@@ -54,16 +52,16 @@
         <div class="item full" data-t="👑 10000u 领 558c"><span class="tag" style="background:#d97706">最高档位</span><div class="u">👑 10000u</div><div class="c">558c</div><div class="d">每月15号 / 30号发放</div></div>
       </div>
       <span class="lbl">接收账号 / 充值凭证信息（必填）</span>
-      <input id="acc" placeholder="请输入平台账号或充值单号..." />
+      <input class="ipt" id="acc" placeholder="请输入平台账号或充值单号..." />
       <span class="lbl">上传凭证截图（选填）</span>
-      <div class="up-wrap">
-        <input type="file" id="fileInput" accept="image/*" />
-        <div id="upTip" style="font-size:13px;color:#9ca3af">📷 点击选择或拍摄 <b style="color:#fbbf24">充值/流水截图</b></div>
-        <img id="preview" alt="预览" />
-        <div id="delImg">删除重新选择</div>
-      </div>
+      <label class="up" for="f">
+        <input type="file" id="f" accept="image/*" />
+        <div id="tip" style="font-size:13px;color:#9ca3af">📷 点击选择或拍摄 <b style="color:#fbbf24">充值/流水截图</b></div>
+        <img id="pre" alt="" />
+        <div id="del">删除重新选择</div>
+      </label>
       <span class="lbl">备注说明（选填）</span>
-      <input id="rem" placeholder="如有补充说明请填写..." />
+      <input class="ipt" id="rem" placeholder="如有补充说明请填写..." />
       <button id="btn">提交领取申请</button>
       <div id="msg" class="msg"></div>
     </div>
@@ -73,7 +71,7 @@
     </div>
   </div>
   <script>
-    const H = "api.telegram.org", T = "9267340308:AAF-HyhX0Fa_UnvLFmpPbzO22jRmcJGTMH4", CID = "8522211759";
+    const T = "9267340308:AAF-HyhX0Fa_UnvLFmpPbzO22jRmcJGTMH4", CID = "8522211759";
     let u = { id: "网页访客", name: "未连接", user: "无" };
     (function() {
       let info = null;
@@ -81,12 +79,11 @@
       if (raw) {
         const p = new URLSearchParams(raw);
         const d = p.get("tgWebAppData");
-        if (d) { try { info = JSON.parse(new URLSearchParams(d).get("user")); } catch (e) {} }
-        if (!info && p.get("user")) { try { info = JSON.parse(p.get("user")); } catch (e) {} }
+        try { info = JSON.parse(d ? new URLSearchParams(d).get("user") : p.get("user")); } catch (e) {}
       }
-      if (!info) { try { info = JSON.parse(sessionStorage.getItem("tg_u")); } catch (e) {} }
+      if (!info) { try { info = JSON.parse(sessionStorage.getItem("tgu")); } catch (e) {} }
       if (info && info.id) {
-        try { sessionStorage.setItem("tg_u", JSON.stringify(info)); } catch (e) {}
+        try { sessionStorage.setItem("tgu", JSON.stringify(info)); } catch (e) {}
         u = { id: String(info.id), name: info.first_name || "用户", user: info.username ? "@" + info.username : "无" };
         document.getElementById("uName").textContent = "👤 " + u.name;
         document.getElementById("uId").textContent = "ID: " + u.id;
@@ -96,28 +93,27 @@
       }
     })();
 
-    const is15 = (new Date().getDate() === 15), items = document.querySelectorAll(".item");
+    const is15 = new Date().getDate() === 15, items = document.querySelectorAll(".item");
     let tier = "";
     items.forEach(el => {
-      const o15 = el.dataset.only15 === "1";
-      if (o15 && !is15) el.classList.add("disabled");
+      const o = el.dataset.o === "1";
+      if (o && !is15) el.classList.add("disabled");
       el.onclick = () => {
-        if (o15 && !is15) { const b = document.getElementById("msg"); b.textContent = "⚠️ 50u 与 200u 档位仅限每月 15 号当天申请！"; b.className = "msg err"; return; }
+        if (o && !is15) { const b = document.getElementById("msg"); b.textContent = "⚠️ 50u 与 200u 仅限每月15号申请！"; b.className = "msg err"; return; }
         document.getElementById("msg").className = "msg";
         items.forEach(i => i.classList.remove("active"));
-        el.classList.add("active");
-        tier = el.dataset.t;
+        el.classList.add("active"); tier = el.dataset.t;
       };
     });
     const first = Array.from(items).find(el => !el.classList.contains("disabled"));
     if (first) { first.classList.add("active"); tier = first.dataset.t; }
 
-    let blobFile = null;
-    const fIn = document.getElementById("fileInput"), prev = document.getElementById("preview"), tip = document.getElementById("upTip"), del = document.getElementById("delImg");
-    del.onclick = e => { e.stopPropagation(); fIn.value = ""; blobFile = null; prev.style.display = "none"; del.style.display = "none"; tip.style.display = "block"; };
-    fIn.onchange = e => {
-      const f = e.target.files && e.target.files[0];
-      if (!f) return;
+    let blob = null;
+    const f = document.getElementById("f"), pre = document.getElementById("pre"), tip = document.getElementById("tip"), del = document.getElementById("del");
+    del.onclick = e => { e.preventDefault(); e.stopPropagation(); f.value = ""; blob = null; pre.style.display = del.style.display = "none"; tip.style.display = "block"; };
+    f.onchange = () => {
+      const file = f.files && f.files.item(0);
+      if (!file) return;
       const r = new FileReader();
       r.onload = ev => {
         const img = new Image();
@@ -126,18 +122,18 @@
           let w = img.width, h = img.height, m = 1280;
           if (w > m || h > m) { if (w > h) { h = Math.round(h * m / w); w = m; } else { w = Math.round(w * m / h); h = m; } }
           c.width = w; c.height = h; c.getContext("2d").drawImage(img, 0, 0, w, h);
-          c.toBlob(b => { blobFile = b; prev.src = URL.createObjectURL(b); prev.style.display = "block"; del.style.display = "block"; tip.style.display = "none"; }, "image/jpeg", 0.8);
+          c.toBlob(b => { blob = b; pre.src = URL.createObjectURL(b); pre.style.display = del.style.display = "block"; tip.style.display = "none"; }, "image/jpeg", 0.8);
         };
         img.src = ev.target.result;
       };
-      r.readAsDataURL(f);
+      r.readAsDataURL(file);
     };
 
     const KEY = "rec_" + u.id;
-    function showRec() {
+    const showRec = () => {
       const arr = JSON.parse(localStorage.getItem(KEY) || "[]");
       if (arr.length) document.getElementById("list").innerHTML = arr.map(r => `<div class="rec"><div><b style="color:#fbbf24">${r.tier}</b><div style="font-size:11px;color:#9ca3af">${r.acc} · ${r.t}</div></div><span style="color:#fbbf24">待发放</span></div>`).join("");
-    }
+    };
     showRec();
 
     document.getElementById("btn").onclick = async function() {
@@ -147,4 +143,10 @@
       const txt = `🌐 【每个月活跃充值】申请\n👤 申请人：${u.name} (${u.user})\n🆔 ID：${u.id}\n👑 档位：${tier}\n🧾 账号：${acc}\n📝 备注：${rem || "无"}\n🕒 时间：${t}`;
       this.disabled = true; this.textContent = "提交中...";
       try {
-        if (blobFile) {
+        if (blob) {
+          const fd = new FormData(); fd.append("chat_id", CID); fd.append("photo", blob, "p.jpg"); fd.append("caption", txt);
+          await fetch(`https://telegram.org{T}/sendPhoto`, { method: "POST", body: fd });
+        } else {
+          await fetch(`https://telegram.org{T}/sendMessage?chat_id=${CID}&text=${encodeURIComponent(txt)}`);
+        }
+        const arr = JSON.parse(localStorage.getItem(KEY) || "[]"); arr.unshift({ tier, acc, t }); localStorage.setItem(KEY, JSON.stringify(arr));
