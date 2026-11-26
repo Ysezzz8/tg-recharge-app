@@ -1,158 +1,383 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>🌐 每个月活跃充值</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>月度活跃奖励中心</title>
+  <!-- 引入 Telegram WebApp 官方 SDK -->
   <script src="https://telegram.org"></script>
   <style>
-    body { font-family: -apple-system, sans-serif; background: var(--tg-theme-bg-color, #f2f4f7); color: var(--tg-theme-text-color, #111); margin: 0; padding: 16px; display: flex; flex-direction: column; align-items: center; }
-    .card { background: var(--tg-theme-secondary-bg-color, #fff); border-radius: 16px; padding: 18px; width: 100%; max-width: 400px; box-sizing: border-box; margin-bottom: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-    .points-num { font-size: 42px; font-weight: 800; color: var(--tg-theme-button-color, #2481cc); margin: 6px 0; text-align: center; }
-    .notice { background: rgba(36,129,204,0.1); border-left: 4px solid #2481cc; padding: 10px 12px; border-radius: 8px; font-size: 13px; line-height: 1.6; margin-bottom: 14px; }
-    .tier-item { display: flex; justify-content: space-between; align-items: center; padding: 11px 14px; border-radius: 10px; border: 1.5px solid rgba(128,128,128,0.2); margin-bottom: 8px; cursor: pointer; }
-    .tier-item.active { border-color: #2481cc; background: rgba(36,129,204,0.08); }
-    .tag { font-size: 11px; color: #d97706; background: #fef3c7; padding: 2px 6px; border-radius: 4px; margin-left: 6px; }
-    .tag.normal { color: #2563eb; background: #dbeafe; }
-    input { width: 100%; padding: 11px; margin: 8px 0 14px; border: 1px solid rgba(128,128,128,0.3); border-radius: 10px; box-sizing: border-box; font-size: 14px; background: var(--tg-theme-bg-color, #fff); color: var(--tg-theme-text-color, #000); }
-    button { background: var(--tg-theme-button-color, #2481cc); color: var(--tg-theme-button-text-color, #fff); border: none; border-radius: 10px; padding: 12px; font-size: 15px; font-weight: bold; width: 100%; cursor: pointer; }
-    .record { font-size: 13px; padding: 9px 0; border-bottom: 1px dashed rgba(128,128,128,0.2); display: flex; justify-content: space-between; align-items: center; }
-    .badge { padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: bold; }
-    .pending { background: #fff3cd; color: #856404; } .approved { background: #d4edda; color: #155724; } .rejected { background: #f8d7da; color: #721c24; }
+    :root {
+      --bg-color: var(--tg-theme-bg-color, #f4f5f7);
+      --card-bg: var(--tg-theme-secondary-bg-color, #ffffff);
+      --text-color: var(--tg-theme-text-color, #1f2329);
+      --hint-color: var(--tg-theme-hint-color, #8f959e);
+      --btn-color: var(--tg-theme-button-color, #2481cc);
+      --btn-text: var(--tg-theme-button-text-color, #ffffff);
+      --border-color: rgba(143, 149, 158, 0.2);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      padding: 16px;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    /* 顶部用户信息卡片 */
+    .header-card {
+      background: linear-gradient(135deg, #2481cc 0%, #1a66a8 100%);
+      color: #ffffff;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 12px rgba(36, 129, 204, 0.2);
+    }
+
+    .user-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .user-name {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .user-id {
+      font-size: 12px;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 2px 8px;
+      border-radius: 12px;
+    }
+
+    .points-label {
+      font-size: 13px;
+      opacity: 0.85;
+    }
+
+    .points-value {
+      font-size: 32px;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    /* 通用卡片样式 */
+    .card {
+      background-color: var(--card-bg);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 16px;
+      border: 1px solid var(--border-color);
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* 规则提示框 */
+    .notice-box {
+      background-color: rgba(217, 119, 6, 0.1);
+      border-left: 3px solid #d97706;
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      margin-bottom: 16px;
+    }
+
+    .notice-box p {
+      margin-bottom: 4px;
+    }
+
+    .notice-box p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* 档位选择网格 */
+    .tier-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .tier-item {
+      border: 1.5px solid var(--border-color);
+      border-radius: 10px;
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .tier-item.active {
+      border-color: var(--btn-color);
+      background-color: rgba(36, 129, 204, 0.08);
+    }
+
+    .tier-amount {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--btn-color);
+    }
+
+    .tier-desc {
+      font-size: 12px;
+      color: var(--hint-color);
+      margin-top: 4px;
+    }
+
+    /* 表单输入框 */
+    .input-group {
+      margin-bottom: 14px;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 13px;
+      color: var(--hint-color);
+      margin-bottom: 6px;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-size: 14px;
+      outline: none;
+    }
+
+    .input-group input:focus {
+      border-color: var(--btn-color);
+    }
+
+    /* 主按钮 */
+    .submit-btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      background-color: var(--btn-color);
+      color: var(--btn-text);
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .submit-btn:active {
+      opacity: 0.8;
+    }
+
+    /* 申请记录列表 */
+    .record-empty {
+      text-align: center;
+      color: var(--hint-color);
+      font-size: 13px;
+      padding: 20px 0;
+    }
+
+    .record-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .record-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .record-info-title {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .record-info-time {
+      font-size: 12px;
+      color: var(--hint-color);
+      margin-top: 2px;
+    }
+
+    .status-badge {
+      font-size: 12px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background-color: rgba(217, 119, 6, 0.12);
+      color: #d97706;
+      font-weight: 500;
+    }
   </style>
 </head>
 <body>
-  <div class="card" style="text-align:center;">
-    <div id="userName" style="font-weight:bold;">连接中...</div>
-    <div class="points-num"><span id="pointsDisplay">0</span><span style="font-size:18px;">c</span></div>
-    <div id="userIdDisplay" style="font-size:12px;opacity:0.7;">ID: --</div>
+  <div class="container">
+    <!-- 顶部积分与账户概览 -->
+    <div class="header-card">
+      <div class="user-row">
+        <span class="user-name" id="userName">未连接 Telegram</span>
+        <span class="user-id" id="userId">ID: --</span>
+      </div>
+      <div class="points-label">当前可用活跃积分</div>
+      <div class="points-value" id="userPoints">0 积分</div>
+    </div>
+
+    <!-- 奖励领取申请区 -->
+    <div class="card">
+      <div class="card-title">🎁 月度活跃奖励领取</div>
+
+      <div class="notice-box">
+        <p>📅 <strong>发放时间</strong>：每月 15 号、30 号统一审核发放</p>
+        <p>⚠️ <strong>领取限制</strong>：高额档位每月 15 号开放一次申请</p>
+      </div>
+
+      <div class="tier-grid" id="tierGrid">
+        <div class="tier-item active" data-tier="基础活跃档 (10 积分)">
+          <div class="tier-amount">10 积分</div>
+          <div class="tier-desc">15号 / 30号可领</div>
+        </div>
+        <div class="tier-item" data-tier="进阶活跃档 (30 积分)">
+          <div class="tier-amount">30 积分</div>
+          <div class="tier-desc">15号 / 30号可领</div>
+        </div>
+        <div class="tier-item" data-tier="高级活跃档 (50 积分)">
+          <div class="tier-amount">50 积分</div>
+          <div class="tier-desc">仅限每月 15 号</div>
+        </div>
+        <div class="tier-item" data-tier="尊享活跃档 (200 积分)">
+          <div class="tier-amount">200 积分</div>
+          <div class="tier-desc">仅限每月 15 号</div>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label for="remarkInput">备注信息（选填，如接收账号或活动说明）</label>
+        <input type="text" id="remarkInput" placeholder="请输入备注信息..." />
+      </div>
+
+      <button class="submit-btn" id="submitBtn">提交领取申请</button>
+    </div>
+
+    <!-- 申请记录 -->
+    <div class="card">
+      <div class="card-title">📜 我的申请记录</div>
+      <div id="recordList">
+        <div class="record-empty">暂无领取记录</div>
+      </div>
+    </div>
   </div>
-  <div class="card">
-    <h3 style="margin:0 0 12px;">🌐 每个月活跃充值</h3>
-    <div class="notice">📅 <b>每月 15号、30号 发放</b><br>⚠️ 50u、200u 档位<b>只能每月 15 号领取一次</b></div>
-    <div id="tierList"></div>
-    <input type="text" id="orderNoteInput" placeholder="填写充值账号 / 交易单号 / 凭证">
-    <button id="submitBtn" onclick="submitClaim()">提交领取申请</button>
-  </div>
-  <div class="card">
-    <h3 style="margin:0 0 10px;">📜 我的申请记录</h3>
-    <div id="myClaimsList" style="font-size:13px;opacity:0.6;">暂无记录</div>
-  </div>
-  <div class="card" id="adminPanel" style="display:none; border:1.5px solid #2481cc;">
-    <h3 style="margin:0 0 10px;">🛡️ 管理员审核台</h3>
-    <div id="pendingList" style="margin-bottom:16px;">暂无待审核</div>
-    <h3 style="margin:0 0 8px;">🛠️ 手动增减 c 币</h3>
-    <input type="number" id="targetIdInput" placeholder="目标用户 ID">
-    <input type="number" id="amountInput" placeholder="数量（负数扣除）">
-    <button onclick="manualAdd()">确认调整</button>
-  </div>
+
   <script>
-    const tg = window.Telegram?.WebApp; if (tg) tg.expand();
-    const ADMIN_ID = 8522211759;
-    const BOT_TOKEN = '9267340308:AAF-HyhX0Fa_UnvLFmpPbzO22jRmcJGTMH4';
-    const TIERS = [
-      { id: 'u50',    name: '👑 50u 档位',    reward: 38,  only15th: true,  note: '只能15号一次' },
-      { id: 'u200',   name: '👑 200u 档位',   reward: 58,  only15th: true,  note: '只能15号一次' },
-      { id: 'u500',   name: '👑 500u 档位',   reward: 88,  only15th: false, note: '15号/30号发放' },
-      { id: 'u1500',  name: '👑 1500u 档位',  reward: 158, only15th: false, note: '15号/30号发放' },
-      { id: 'u3000',  name: '👑 3000u 档位',  reward: 238, only15th: false, note: '15号/30号发放' },
-      { id: 'u6000',  name: '👑 6000u 档位',  reward: 358, only15th: false, note: '15号/30号发放' },
-      { id: 'u10000', name: '👑 10000u 档位', reward: 558, only15th: false, note: '15号/30号发放' }
-    ];
-    let selectedTierId = 'u50';
-    let currentUser = tg?.initDataUnsafe?.user || { id: 8522211759, first_name: '管理员' };
+    // 1. 初始化 Telegram Mini App
+    const tg = window.Telegram?.WebApp;
+    let currentUserId = "guest";
 
-    function getDB() {
-      return JSON.parse(localStorage.getItem('tg_recharge_db') || '{"users":{},"claims":[]}');
+    if (tg) {
+      tg.ready();
+      tg.expand();
+      const user = tg.initDataUnsafe?.user;
+      if (user) {
+        currentUserId = String(user.id);
+        const fullName = [user.first_name, user.last_name].filter(Boolean).join(" ");
+        document.getElementById("userName").textContent = fullName || user.username || "Telegram 用户";
+        document.getElementById("userId").textContent = `ID: ${user.id}`;
+      }
     }
-    function saveDB(db) {
-      localStorage.setItem('tg_recharge_db', JSON.stringify(db));
-    }
-    function selectTier(id) {
-      selectedTierId = id;
-      document.querySelectorAll('.tier-item').forEach(el => el.classList.toggle('active', el.dataset.id === id));
-    }
-    function render() {
-      document.getElementById('userName').innerText = '你好，' + currentUser.first_name;
-      document.getElementById('userIdDisplay').innerText = '我的 ID: ' + currentUser.id;
-      const db = getDB();
-      document.getElementById('pointsDisplay').innerText = db.users[currentUser.id] || 0;
 
-      document.getElementById('tierList').innerHTML = TIERS.map(t => `
-        <div class="tier-item ${t.id === selectedTierId ? 'active' : ''}" data-id="${t.id}" onclick="selectTier('${t.id}')">
-          <div><b>${t.name}</b><span class="tag ${t.only15th ? '' : 'normal'}">${t.note}</span></div>
-          <b style="color:#2481cc;">+${t.reward}c</b>
-        </div>`).join('');
+    // 2. 档位选择交互
+    let selectedTier = "基础活跃档 (10 积分)";
+    const tierItems = document.querySelectorAll(".tier-item");
 
-      const myClaims = db.claims.filter(c => c.user_id === currentUser.id).reverse();
-      if (myClaims.length) {
-        const map = { pending: ['待发放', 'pending'], approved: ['已发放', 'approved'], rejected: ['已拒绝', 'rejected'] };
-        document.getElementById('myClaimsList').style.opacity = '1';
-        document.getElementById('myClaimsList').innerHTML = myClaims.map(c => `
-          <div class="record"><div><b>${c.tier_name}</b> (+${c.reward}c)<br><small>${c.note}</small></div>
-          <span class="badge ${map[c.status]}">${map[c.status]}</span></div>`).join('');
+    tierItems.forEach((item) => {
+      item.addEventListener("click", () => {
+        tierItems.forEach((el) => el.classList.remove("active"));
+        item.classList.add("active");
+        selectedTier = item.getAttribute("data-tier");
+      });
+    });
+
+    // 3. 读取与渲染本地记录
+    const STORAGE_KEY = `reward_records_${currentUserId}`;
+
+    function loadRecords() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      const records = raw ? JSON.parse(raw) : [];
+      const listEl = document.getElementById("recordList");
+
+      if (records.length === 0) {
+        listEl.innerHTML = `<div class="record-empty">暂无领取记录</div>`;
+        return;
       }
 
-      if (currentUser.id === ADMIN_ID) {
-        document.getElementById('adminPanel').style.display = 'block';
-        const pendings = db.claims.filter(c => c.status === 'pending');
-        document.getElementById('pendingList').innerHTML = pendings.length ? pendings.map(i => `
-          <div style="background:rgba(128,128,128,0.08);padding:10px;border-radius:8px;margin-bottom:8px;font-size:13px;">
-            <b>${i.first_name}</b> (${i.user_id}) 申请 <b>${i.tier_name}</b> (+${i.reward}c)<br>凭证：${i.note}
-            <div style="display:flex;gap:8px;margin-top:8px;">
-              <button style="padding:6px;font-size:12px;" onclick="review(${i.id},'approved')">✅ 通过发奖</button>
-              <button style="padding:6px;font-size:12px;background:#dc3545;" onclick="review(${i.id},'rejected')">❌ 拒绝</button>
+      listEl.innerHTML = records
+        .map(
+          (item) => `
+          <div class="record-item">
+            <div>
+              <div class="record-info-title">${item.tier}</div>
+              <div class="record-info-time">${item.time}${item.remark ? " · " + item.remark : ""}</div>
             </div>
-          </div>`).join('') : '暂无待审核';
-      }
+            <span class="status-badge">${item.status}</span>
+          </div>
+        `
+        )
+        .join("");
     }
-    function submitClaim() {
-      const note = document.getElementById('orderNoteInput').value.trim();
-      if (!note) return alert('请填写充值凭证！');
-      const tier = TIERS.find(t => t.id === selectedTierId);
-      const now = new Date(Date.now() + 8 * 3600 * 1000);
-      const day = now.getUTCDate();
-      const ym = `${now.getUTCFullYear()}-${now.getUTCMonth() + 1}`;
-      const db = getDB();
 
-      if (tier.only15th) {
-        if (day !== 15) return alert(`【${tier.name}】仅限每月 15 号开放领取（今天是 ${day} 号）`);
-        if (db.claims.some(c => c.user_id === currentUser.id && c.tier_id === tier.id && c.ym === ym && c.status !== 'rejected')) {
-          return alert('本月你已申请过该档位，每月仅限 15 号一次！');
-        }
+    // 4. 提交申请逻辑
+    document.getElementById("submitBtn").addEventListener("click", () => {
+      const remark = document.getElementById("remarkInput").value.trim();
+      const now = new Date();
+      const timeStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(
+        now.getDate()
+      ).padStart(2, "0")} ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+
+      const raw = localStorage.getItem(STORAGE_KEY);
+      const records = raw ? JSON.parse(raw) : [];
+
+      records.unshift({
+        tier: selectedTier,
+        remark: remark,
+        time: timeStr,
+        status: "审核中",
+      });
+
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+      document.getElementById("remarkInput").value = "";
+      loadRecords();
+
+      if (tg && tg.showAlert) {
+        tg.showAlert(`已成功提交【${selectedTier}】申请，请等待审核发放！`);
+      } else {
+        alert(`已成功提交【${selectedTier}】申请，请等待审核发放！`);
       }
-      db.claims.push({ id: Date.now(), user_id: currentUser.id, first_name: currentUser.first_name, tier_id: tier.id, tier_name: tier.name, reward: tier.reward, note, ym, status: 'pending' });
-      saveDB(db);
-      fetch(`https://telegram.org{BOT_TOKEN}/sendMessage`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ chat_id: ADMIN_ID, text: `🔔 新充值奖励申请\n用户：${currentUser.first_name} (${currentUser.id})\n档位：${tier.name} (+${tier.reward}c)\n凭证：${note}` })
-      }).catch(()=>{});
-      document.getElementById('orderNoteInput').value = '';
-      alert(`✅ 申请已提交！将于每月 15 号/30 号统一发放 ${tier.reward}c`);
-      render();
-    }
-    function review(id, status) {
-      const db = getDB();
-      const claim = db.claims.find(c => c.id === id);
-      if (claim && claim.status === 'pending') {
-        claim.status = status;
-        if (status === 'approved') db.users[claim.user_id] = (db.users[claim.user_id] || 0) + claim.reward;
-        saveDB(db);
-        render();
-      }
-    }
-    function manualAdd() {
-      const tid = Number(document.getElementById('targetIdInput').value);
-      const amt = Number(document.getElementById('amountInput').value);
-      if (!tid || isNaN(amt)) return alert('格式错误');
-      const db = getDB();
-      db.users[tid] = (db.users[tid] || 0) + amt;
-      saveDB(db);
-      alert('✅ 调整成功，当前余额：' + db.users[tid] + 'c');
-      render();
-    }
-    render();
+    });
+
+    // 页面加载时初始化记录列表
+    loadRecords();
   </script>
 </body>
 </html>
-
