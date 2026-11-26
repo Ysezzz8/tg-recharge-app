@@ -260,4 +260,93 @@
       item.onclick = () => {
         document.querySelectorAll(".tier-item").forEach(el => el.classList.remove("active"));
         item.classList.add("active");
-        selectedTier = item.getAttribute("data-tier");
+                selectedTier = item.getAttribute("data-tier");
+      };
+    });
+
+    const STORAGE_KEY = "monthly_active_records_" + userInfo.id;
+    function loadRecords() {
+      const records = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+      const listEl = document.getElementById("recordList");
+      if (!records.length) {
+        listEl.innerHTML = '<div class="record-empty">暂无领取记录</div>';
+        return;
+      }
+      listEl.innerHTML = records.map(r => `
+        <div class="record-item">
+          <div>
+            <div style="font-size:14px;font-weight:700;color:#fbbf24">${r.tier}</div>
+            <div style="font-size:12px;color:#e5e7eb">${r.account}${r.remark ? " · " + r.remark : ""}</div>
+            <div style="font-size:11px;color:#9ca3af">${r.time}</div>
+          </div>
+          <span class="badge">${r.status}</span>
+        </div>
+      `).join("");
+    }
+
+    function showStatus(text, isSuccess) {
+      const box = document.getElementById("statusMsg");
+      box.textContent = text;
+      box.className = "status-msg " + (isSuccess ? "success" : "error");
+    }
+
+    document.getElementById("submitBtn").onclick = async function () {
+      const btn = this;
+      const account = document.getElementById("accountInput").value.trim();
+      const remark = document.getElementById("remarkInput").value.trim();
+
+      if (!account) {
+        showStatus("⚠️ 请先填写接收账号或充值凭证信息！", false);
+        return;
+      }
+
+      const now = new Date();
+      const timeStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")} ${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}`;
+
+      const msg = [
+        "🌐 <b>【每个月活跃充值】领取申请</b>",
+        "━━━━━━━━━━━━━━",
+        `👤 <b>申请人</b>：${userInfo.name}`,
+        `🔗 <b>用户名</b>：${userInfo.username}`,
+        `🆔 <b>用户ID</b>：<code>${userInfo.id}</code>`,
+        `👑 <b>申请档位</b>：${selectedTier}`,
+        `🧾 <b>账号/凭证</b>：<code>${account}</code>`,
+        `📝 <b>备注说明</b>：${remark || "无"}`,
+        `🕒 <b>提交时间</b>：${timeStr}`
+      ].join("\n");
+
+      btn.disabled = true;
+      btn.textContent = "正在提交审核...";
+      document.getElementById("statusMsg").className = "status-msg";
+
+      try {
+        const res = await fetch(`https://telegram.org{BOT_TOKEN}/sendMessage`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ chat_id: ADMIN_CHAT_ID, text: msg, parse_mode: "HTML" })
+        });
+        const data = await res.json();
+
+        if (data.ok) {
+          const records = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+          records.unshift({ tier: selectedTier, account, remark, time: timeStr, status: "待15/30号发放" });
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+          document.getElementById("accountInput").value = "";
+          document.getElementById("remarkInput").value = "";
+          loadRecords();
+          showStatus("✅ 申请已成功提交！将于每月 15 号或 30 号审核发放。", true);
+        } else {
+          showStatus(`❌ 提交失败：${data.description}（请确保已在 Telegram 中向你的机器人发送过 /start）`, false);
+        }
+      } catch (err) {
+        showStatus("❌ 网络请求异常：无法连接 Telegram 服务器，请检查网络设置。", false);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "提交领取申请";
+      }
+    };
+
+    loadRecords();
+  </script>
+</body>
+</html>
