@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>🌐 每个月活跃充值</title>
-<script src="https://telegram.org"></script>
+  <script src="https://telegram.org"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, sans-serif; }
     body { background: #0b1120 url('./bg.jpg') center top/cover no-repeat; color: #f9fafb; padding: 16px; min-height: 100vh; }
@@ -15,9 +15,10 @@
     h1 { font-size: 20px; color: #fbbf24; margin-bottom: 4px; }
     .rule { background: rgba(245,158,11,0.15); border-left: 3px solid #f59e0b; padding: 8px 10px; font-size: 12px; color: #fde68a; margin-bottom: 14px; border-radius: 4px; }
     .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
-    .item { background: rgba(10,15,28,0.8); border: 1.5px solid #374151; border-radius: 10px; padding: 12px 8px; text-align: center; position: relative; cursor: pointer; }
+    .item { background: rgba(10,15,28,0.8); border: 1.5px solid #374151; border-radius: 10px; padding: 12px 8px; text-align: center; position: relative; cursor: pointer; transition: 0.2s; }
     .item.full { grid-column: span 2; }
     .item.active { border-color: #fbbf24; background: rgba(245,158,11,0.25); }
+    .item.disabled { opacity: 0.4; cursor: not-allowed; border-color: #1f2937; }
     .tag { position: absolute; top: -7px; right: 6px; background: #dc2626; color: #fff; font-size: 10px; padding: 1px 5px; border-radius: 4px; }
     .u { font-size: 14px; font-weight: 700; }
     .c { font-size: 20px; font-weight: 800; color: #fbbf24; }
@@ -41,8 +42,8 @@
     <div class="card">
       <div class="rule">📅 每月 <b>15号、30号</b> 统一发放<br>⚠️ <b>50u</b> 与 <b>200u</b> 档位每月仅限 <b>15号</b> 申请一次</div>
       <div class="grid">
-        <div class="item active" data-t="👑 50u 领 38c (只能15号一次)"><span class="tag">只能15号一次</span><div class="u">👑 50u</div><div class="c">38c</div><div class="d">每月15号限领一次</div></div>
-        <div class="item" data-t="👑 200u 领 58c (只能15号一次)"><span class="tag">只能15号一次</span><div class="u">👑 200u</div><div class="c">58c</div><div class="d">每月15号限领一次</div></div>
+        <div class="item" data-only15="1" data-t="👑 50u 领 38c (只能15号一次)"><span class="tag">只能15号一次</span><div class="u">👑 50u</div><div class="c">38c</div><div class="d">每月15号限领一次</div></div>
+        <div class="item" data-only15="1" data-t="👑 200u 领 58c (只能15号一次)"><span class="tag">只能15号一次</span><div class="u">👑 200u</div><div class="c">58c</div><div class="d">每月15号限领一次</div></div>
         <div class="item" data-t="👑 500u 领 88c"><div class="u">👑 500u</div><div class="c">88c</div><div class="d">15号 / 30号发放</div></div>
         <div class="item" data-t="👑 1500u 领 158c"><div class="u">👑 1500u</div><div class="c">158c</div><div class="d">15号 / 30号发放</div></div>
         <div class="item" data-t="👑 3000u 领 238c"><div class="u">👑 3000u</div><div class="c">238c</div><div class="d">15号 / 30号发放</div></div>
@@ -63,38 +64,83 @@
   </div>
   <script>
     const H = "api.telegram.org";
-    const T = "9267340308:AAF-HyhX0Fa_UnvLFmpPbzO22jRmcJGTMH4";
+    const T = "把这里换成你的新TOKEN";
     const CID = "8522211759";
     const tg = window.Telegram && window.Telegram.WebApp;
     let u = { id: "网页访客", name: "未连接", user: "无" };
     if (tg) {
-      tg.ready(); tg.expand();
-      const info = tg.initDataUnsafe && tg.initDataUnsafe.user;
-      if (info) {
-        u = { id: String(info.id), name: info.first_name || "用户", user: info.username ? "@" + info.username : "无" };
+      tg.ready();
+      tg.expand();
+      let info = tg.initDataUnsafe && tg.initDataUnsafe.user;
+      if (!info && tg.initData) {
+        try {
+          const params = new URLSearchParams(tg.initData);
+          const userStr = params.get("user");
+          if (userStr) info = JSON.parse(userStr);
+        } catch (e) {}
+      }
+      if (info && info.id) {
+        u = {
+          id: String(info.id),
+          name: info.first_name || "用户",
+          user: info.username ? "@" + info.username : "无"
+        };
         document.getElementById("uName").textContent = "👤 " + u.name;
         document.getElementById("uId").textContent = "ID: " + u.id;
       }
     }
-    let tier = "👑 50u 领 38c (只能15号一次)";
-    document.querySelectorAll(".item").forEach(el => {
+
+    const today = new Date().getDate();
+    const is15th = (today === 15);
+    const items = document.querySelectorAll(".item");
+    let tier = "";
+
+    items.forEach(el => {
+      const only15 = el.getAttribute("data-only15") === "1";
+      if (only15 && !is15th) {
+        el.classList.add("disabled");
+      }
       el.onclick = () => {
-        document.querySelectorAll(".item").forEach(i => i.classList.remove("active"));
+        if (only15 && !is15th) {
+          const box = document.getElementById("msg");
+          box.textContent = "⚠️ 50u 与 200u 档位仅限每月 15 号当天申请！";
+          box.className = "msg err";
+          return;
+        }
+        document.getElementById("msg").className = "msg";
+        items.forEach(i => i.classList.remove("active"));
         el.classList.add("active");
         tier = el.getAttribute("data-t");
       };
     });
+
+    const firstAvailable = Array.from(items).find(el => !el.classList.contains("disabled"));
+    if (firstAvailable) {
+      firstAvailable.classList.add("active");
+      tier = firstAvailable.getAttribute("data-t");
+    }
+
     const KEY = "rec_" + u.id;
     function showRec() {
       const arr = JSON.parse(localStorage.getItem(KEY) || "[]");
       if (arr.length) document.getElementById("list").innerHTML = arr.map(r => `<div class="rec"><div><b style="color:#fbbf24">${r.tier}</b><div style="font-size:11px;color:#9ca3af">${r.acc} · ${r.t}</div></div><span style="color:#fbbf24">待发放</span></div>`).join("");
     }
     showRec();
+
     document.getElementById("btn").onclick = function() {
       const acc = document.getElementById("acc").value.trim();
       const rem = document.getElementById("rem").value.trim();
       const box = document.getElementById("msg");
-      if (!acc) { box.textContent = "⚠️ 请先填写接收账号或凭证！"; box.className = "msg err"; return; }
+      if (!tier || (tier.includes("只能15号一次") && !is15th)) {
+        box.textContent = "⚠️ 50u 与 200u 档位仅限每月 15 号当天申请！";
+        box.className = "msg err";
+        return;
+      }
+      if (!acc) {
+        box.textContent = "⚠️ 请先填写接收账号或凭证！";
+        box.className = "msg err";
+        return;
+      }
       const t = new Date().toLocaleString("zh-CN", { hour12: false });
       const text = encodeURIComponent(`🌐 【每个月活跃充值】申请\n👤 申请人：${u.name} (${u.user})\n🆔 ID：${u.id}\n👑 档位：${tier}\n🧾 账号：${acc}\n📝 备注：${rem || "无"}\n🕒 时间：${t}`);
       this.disabled = true; this.textContent = "提交中...";
