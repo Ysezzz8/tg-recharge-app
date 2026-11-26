@@ -88,41 +88,38 @@
         document.getElementById("uName").textContent = "👤 " + u.name;
         document.getElementById("uId").textContent = "ID: " + u.id;
       }
-      if (window.TelegramWebviewProxy) {
-        try { TelegramWebviewProxy.postEvent("web_app_ready", ""); TelegramWebviewProxy.postEvent("web_app_expand", ""); } catch (e) {}
-      }
     })();
 
     const is15 = new Date().getDate() === 15, items = document.querySelectorAll(".item");
     let tier = "";
-    items.forEach(el => {
-      const o = el.dataset.o === "1";
+    items.forEach(function(el) {
+      const o = el.getAttribute("data-o") === "1";
       if (o && !is15) el.classList.add("disabled");
-      el.onclick = () => {
+      el.onclick = function() {
         if (o && !is15) { const b = document.getElementById("msg"); b.textContent = "⚠️ 50u 与 200u 仅限每月15号申请！"; b.className = "msg err"; return; }
         document.getElementById("msg").className = "msg";
-        items.forEach(i => i.classList.remove("active"));
-        el.classList.add("active"); tier = el.dataset.t;
+        items.forEach(function(i) { i.classList.remove("active"); });
+        el.classList.add("active"); tier = el.getAttribute("data-t");
       };
     });
-    const first = Array.from(items).find(el => !el.classList.contains("disabled"));
-    if (first) { first.classList.add("active"); tier = first.dataset.t; }
+    const first = Array.from(items).find(function(el) { return !el.classList.contains("disabled"); });
+    if (first) { first.classList.add("active"); tier = first.getAttribute("data-t"); }
 
     let blob = null;
     const f = document.getElementById("f"), pre = document.getElementById("pre"), tip = document.getElementById("tip"), del = document.getElementById("del");
-    del.onclick = e => { e.preventDefault(); e.stopPropagation(); f.value = ""; blob = null; pre.style.display = del.style.display = "none"; tip.style.display = "block"; };
-    f.onchange = () => {
+    del.onclick = function(e) { e.preventDefault(); e.stopPropagation(); f.value = ""; blob = null; pre.style.display = del.style.display = "none"; tip.style.display = "block"; };
+    f.onchange = function() {
       const file = f.files && f.files.item(0);
       if (!file) return;
       const r = new FileReader();
-      r.onload = ev => {
+      r.onload = function(ev) {
         const img = new Image();
-        img.onload = () => {
+        img.onload = function() {
           const c = document.createElement("canvas");
           let w = img.width, h = img.height, m = 1280;
           if (w > m || h > m) { if (w > h) { h = Math.round(h * m / w); w = m; } else { w = Math.round(w * m / h); h = m; } }
           c.width = w; c.height = h; c.getContext("2d").drawImage(img, 0, 0, w, h);
-          c.toBlob(b => { blob = b; pre.src = URL.createObjectURL(b); pre.style.display = del.style.display = "block"; tip.style.display = "none"; }, "image/jpeg", 0.8);
+          c.toBlob(function(b) { blob = b; pre.src = URL.createObjectURL(b); pre.style.display = del.style.display = "block"; tip.style.display = "none"; }, "image/jpeg", 0.8);
         };
         img.src = ev.target.result;
       };
@@ -130,17 +127,17 @@
     };
 
     const KEY = "rec_" + u.id;
-    const showRec = () => {
+    function showRec() {
       const arr = JSON.parse(localStorage.getItem(KEY) || "[]");
-      if (arr.length) document.getElementById("list").innerHTML = arr.map(r => `<div class="rec"><div><b style="color:#fbbf24">${r.tier}</b><div style="font-size:11px;color:#9ca3af">${r.acc} · ${r.t}</div></div><span style="color:#fbbf24">待发放</span></div>`).join("");
-    };
+      if (arr.length) document.getElementById("list").innerHTML = arr.map(function(r) { return `<div class="rec"><div><b style="color:#fbbf24">${r.tier}</b><div style="font-size:11px;color:#9ca3af">${r.acc} · ${r.t}</div></div><span style="color:#fbbf24">待发放</span></div>`; }).join("");
+    }
     showRec();
 
     document.getElementById("btn").onclick = async function() {
       const acc = document.getElementById("acc").value.trim(), rem = document.getElementById("rem").value.trim(), box = document.getElementById("msg");
       if (!acc) { box.textContent = "⚠️ 请先填写接收账号或凭证！"; box.className = "msg err"; return; }
       const t = new Date().toLocaleString("zh-CN", { hour12: false });
-      const txt = `🌐 【每个月活跃充值】申请\n👤 申请人：${u.name} (${u.user})\n🆔 ID：${u.id}\n👑 档位：${tier}\n🧾 账号：${acc}\n📝 备注：${rem || "无"}\n🕒 时间：${t}`;
+      const txt = `🌐 【鲸周在线.福利中心】申请\n👤 申请人：${u.name} (${u.user})\n🆔 ID：${u.id}\n👑 档位：${tier}\n🧾 账号：${acc}\n📝 备注：${rem || "无"}\n🕒 时间：${t}`;
       this.disabled = true; this.textContent = "提交中...";
       try {
         if (blob) {
@@ -150,3 +147,4 @@
           await fetch(`https://telegram.org{T}/sendMessage?chat_id=${CID}&text=${encodeURIComponent(txt)}`);
         }
         const arr = JSON.parse(localStorage.getItem(KEY) || "[]"); arr.unshift({ tier, acc, t }); localStorage.setItem(KEY, JSON.stringify(arr));
+        document.getElementById("acc").value = document.getElementById("rem").value = ""; del.click(); showRec();
