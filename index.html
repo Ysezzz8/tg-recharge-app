@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>🌐 每个月活跃充值</title>
-  <script src="https://telegram.org"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, sans-serif; }
     body { background: #0b1120 url('./bg.jpg') center top/cover no-repeat; color: #f9fafb; padding: 16px; min-height: 100vh; }
@@ -66,18 +65,32 @@
     const H = "api.telegram.org";
     const T = "把这里换成你的新TOKEN";
     const CID = "8522211759";
-    const tg = window.Telegram && window.Telegram.WebApp;
+
     let u = { id: "网页访客", name: "未连接", user: "无" };
-    if (tg) {
-      tg.ready();
-      tg.expand();
-      let info = tg.initDataUnsafe && tg.initDataUnsafe.user;
-      if (!info && tg.initData) {
-        try {
-          const params = new URLSearchParams(tg.initData);
-          const userStr = params.get("user");
-          if (userStr) info = JSON.parse(userStr);
-        } catch (e) {}
+
+    function parseTgUser() {
+      let info = null;
+      if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) {
+        info = window.Telegram.WebApp.initDataUnsafe.user;
+      }
+      if (!info) {
+        const hash = window.location.hash.substring(1);
+        const search = window.location.search.substring(1);
+        const raw = hash || search;
+        if (raw) {
+          const params = new URLSearchParams(raw);
+          let tgWebAppData = params.get("tgWebAppData");
+          if (tgWebAppData) {
+            const innerParams = new URLSearchParams(tgWebAppData);
+            const userJson = innerParams.get("user");
+            if (userJson) {
+              try { info = JSON.parse(userJson); } catch (e) {}
+            }
+          }
+          if (!info && params.get("user")) {
+            try { info = JSON.parse(params.get("user")); } catch (e) {}
+          }
+        }
       }
       if (info && info.id) {
         u = {
@@ -88,7 +101,14 @@
         document.getElementById("uName").textContent = "👤 " + u.name;
         document.getElementById("uId").textContent = "ID: " + u.id;
       }
+      if (window.TelegramWebviewProxy) {
+        try {
+          window.TelegramWebviewProxy.postEvent("web_app_ready", "");
+          window.TelegramWebviewProxy.postEvent("web_app_expand", "");
+        } catch (e) {}
+      }
     }
+    parseTgUser();
 
     const today = new Date().getDate();
     const is15th = (today === 15);
