@@ -95,11 +95,11 @@
       <h1>🌎 每个月活跃充值</h1>
       <div class="sub">鲸周官方频道 @ysejz · 每月 15号、30号 发放</div>
 
-      <!-- 真实链接直接写死在 href 中，不依赖 JS 动态修改 -->
+      <!-- 使用 tg:// 原生协议直接唤起客户端内部界面，避免跳出到 Safari -->
       <div class="nav-grid">
-        <a class="nav-btn" href="https://t.me" onclick="goTg(event, 'https://t.me')">📢 官方频道</a>
-        <a class="nav-btn" href="https://t.me" onclick="goTg(event, 'https://t.me')">💬 交流群组</a>
-        <a class="nav-btn" href="https://t.me" onclick="goTg(event, 'https://t.me')">🎧 在线客服</a>
+        <a class="nav-btn" href="tg://resolve?domain=ysejz" onclick="goTg(event, 'https://t.me', 'tg://resolve?domain=ysejz')">📢 官方频道</a>
+        <a class="nav-btn" href="tg://join?invite=EyrZvBGSjDA0ZjUx" onclick="goTg(event, 'https://t.me', 'tg://join?invite=EyrZvBGSjDA0ZjUx')">💬 交流群组</a>
+        <a class="nav-btn" href="tg://resolve?domain=TGYsez" onclick="goTg(event, 'https://t.me', 'tg://resolve?domain=TGYsez')">🎧 在线客服</a>
       </div>
     </div>
 
@@ -211,6 +211,3 @@
           if (tgData) {
             var inner = new URLSearchParams(tgData);
             var uStr = inner.get("user");
-            if (uStr) { try { info = JSON.parse(uStr); } catch(e) {} }
-          }
-          if (!info && params.get("user")) {
