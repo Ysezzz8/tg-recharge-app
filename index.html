@@ -4,33 +4,18 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>🌎 每个月活跃充值</title>
-
-  <script>
-    var CONFIG = {
-      BOT_TOKEN: "9267340308:AAF-HyhX0Fa_UnvLFmpPbzO22jRmcJGTMH4",
-      ADMIN_ID:  "6505600437",
-      CHANNEL:   "https://t.me",
-      GROUP:     "https://t.me",
-      SUPPORT:   "https://t.me/TGYsez",
-      BG_IMAGE:  "./bg.jpg"
-    };
-  </script>
-
+  <script src="https://telegram.org"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body {
-      background-color: #070b14;
-      background-position: center center;
-      background-size: cover;
-      background-repeat: no-repeat;
-      background-attachment: fixed;
+      background: #070b14 url('./bg.jpg') center center / cover no-repeat fixed;
       color: #f9fafb;
       padding: 16px;
       min-height: 100vh;
     }
     .box { max-width: 480px; margin: 0 auto; }
     .card {
-      background: rgba(11, 17, 32, 0.82);
+      background: rgba(11, 17, 32, 0.84);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
       border: 1px solid rgba(251, 191, 36, 0.35);
@@ -110,10 +95,11 @@
       <h1>🌎 每个月活跃充值</h1>
       <div class="sub">鲸周官方频道 @ysejz · 每月 15号、30号 发放</div>
 
+      <!-- 真实链接直接写死在 href 中，不依赖 JS 动态修改 -->
       <div class="nav-grid">
-        <a class="nav-btn" id="linkChannel" href="#" target="_blank">📢 官方频道</a>
-        <a class="nav-btn" id="linkGroup" href="#" target="_blank">💬 交流群组</a>
-        <a class="nav-btn" id="linkSupport" href="#" target="_blank">🎧 在线客服</a>
+        <a class="nav-btn" href="https://t.me" onclick="goTg(event, 'https://t.me')">📢 官方频道</a>
+        <a class="nav-btn" href="https://t.me" onclick="goTg(event, 'https://t.me')">💬 交流群组</a>
+        <a class="nav-btn" href="https://t.me" onclick="goTg(event, 'https://t.me')">🎧 在线客服</a>
       </div>
     </div>
 
@@ -191,20 +177,8 @@
   </div>
 
   <script>
-    document.body.style.backgroundImage = "url('" + CONFIG.BG_IMAGE + "')";
-    function bindNav(id, url) {
-      var el = document.getElementById(id);
-      el.href = url;
-      el.onclick = function(e) {
-        if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openTelegramLink) {
-          e.preventDefault();
-          window.Telegram.WebApp.openTelegramLink(url);
-        }
-      };
-    }
-    bindNav("linkChannel", CONFIG.CHANNEL);
-    bindNav("linkGroup", CONFIG.GROUP);
-    bindNav("linkSupport", CONFIG.SUPPORT);
+    var BOT_TOKEN = "9267340308:AAF-HyhX0Fa_UnvLFmpPbzO22jRmcJGTMH4";
+    var ADMIN_ID  = "6505600437";
 
     var u = { id: "网页访客", name: "未连接", user: "无" };
     var tier = "";
@@ -220,7 +194,23 @@
 
     (function() {
       var info = null;
-      if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) {
-        info = window.Telegram.WebApp.initDataUnsafe.user;
+      if (window.Telegram && window.Telegram.WebApp) {
+        try {
+          window.Telegram.WebApp.ready();
+          window.Telegram.WebApp.expand();
+          if (window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) {
+            info = window.Telegram.WebApp.initDataUnsafe.user;
+          }
+        } catch(e) {}
       }
       if (!info) {
+        var raw = (window.location.hash || window.location.search).substring(1);
+        if (raw) {
+          var params = new URLSearchParams(raw);
+          var tgData = params.get("tgWebAppData");
+          if (tgData) {
+            var inner = new URLSearchParams(tgData);
+            var uStr = inner.get("user");
+            if (uStr) { try { info = JSON.parse(uStr); } catch(e) {} }
+          }
+          if (!info && params.get("user")) {
