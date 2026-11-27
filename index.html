@@ -1,157 +1,113 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>🏆 鲸周奖励中心</title>
-  <script src="https://telegram.org"></script>
-  <script src="./config.js"></script>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
-    body {
-      background: #070b14 url('./IMG_1117.jpeg') center center / cover no-repeat fixed;
-      color: #f9fafb;
-      padding: 14px 14px 86px;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-    .box { max-width: 480px; margin: 0 auto; }
-    .card {
-      background: rgba(11, 17, 32, 0.84);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid rgba(251, 191, 36, 0.3);
-      border-radius: 16px;
-      padding: 16px;
-      margin-bottom: 12px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
-    }
-
-    .user-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-    .user-left { display: flex; align-items: center; gap: 10px; }
-    .avatar {
-      width: 44px; height: 44px; border-radius: 50%;
-      background: linear-gradient(135deg, #fbbf24, #d97706);
-      color: #111827; font-weight: 900; font-size: 18px;
-      display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 0 12px rgba(251, 191, 36, 0.45);
-    }
-    .uname { font-size: 15px; font-weight: 700; color: #fff; }
-    .ubadge { display: inline-block; font-size: 11px; color: #fbbf24; background: rgba(251, 191, 36, 0.15); border: 1px solid rgba(251, 191, 36, 0.35); padding: 1px 8px; border-radius: 10px; margin-top: 3px; }
-    .mode-tag { font-size: 10px; padding: 2px 6px; border-radius: 6px; background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.4); }
-
-    .nav-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-    .nav-btn {
-      display: flex; align-items: center; justify-content: center; gap: 4px;
-      background: rgba(251, 191, 36, 0.12);
-      border: 1px solid rgba(251, 191, 36, 0.35);
-      color: #fde68a; text-decoration: none;
-      padding: 8px 4px; border-radius: 9px; font-size: 12px; font-weight: 600;
-    }
-
-    .pts-card {
-      background: linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(17, 24, 39, 0.92));
-      border: 1px solid rgba(251, 191, 36, 0.55);
-    }
-    .pts-title { font-size: 12px; color: #fde68a; }
-    .pts-main { font-size: 36px; font-weight: 900; color: #fbbf24; margin: 4px 0 10px; }
-    .pts-sub { display: flex; justify-content: space-between; font-size: 12px; color: #d1d5db; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px; }
-    .pts-sub b { color: #fff; }
-
-    .checkin-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 12px 0; }
-    .day-box { background: rgba(10, 15, 28, 0.85); border: 1px solid #374151; border-radius: 10px; padding: 8px 4px; text-align: center; }
-    .day-box.day7 { grid-column: span 2; }
-    .day-box.done { border-color: #10b981; background: rgba(16, 185, 129, 0.18); opacity: 0.7; }
-    .day-box.today { border-color: #fbbf24; background: rgba(245, 158, 11, 0.25); box-shadow: 0 0 10px rgba(251, 191, 36, 0.3); }
-    .day-num { font-size: 11px; color: #9ca3af; }
-    .day-pts { font-size: 14px; font-weight: 800; color: #fbbf24; margin-top: 2px; }
-
-    .act-btn {
-      background: linear-gradient(90deg, #fbbf24, #d97706);
-      color: #111827; border: none; border-radius: 10px;
-      padding: 10px 14px; font-size: 13px; font-weight: 800;
-      cursor: pointer; white-space: nowrap; transition: 0.15s;
-    }
-    .act-btn:active { transform: scale(0.96); }
-    .act-btn:disabled { background: #374151; color: #9ca3af; cursor: not-allowed; transform: none; }
-    .full-btn { width: 100%; padding: 12px; font-size: 14px; }
-
-    .action-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-    .act-info h3 { font-size: 15px; color: #fff; margin-bottom: 3px; }
-    .act-info p { font-size: 12px; color: #9ca3af; }
-    .task-item { display: flex; align-items: center; justify-content: space-between; padding: 11px 0; border-bottom: 1px solid rgba(75, 85, 99, 0.4); gap: 8px; }
-    .task-item:last-child { border-bottom: none; }
-    .task-name { font-size: 13px; font-weight: 600; color: #f3f4f6; }
-    .task-desc { font-size: 11px; color: #9ca3af; margin-top: 2px; }
-    .task-pts { font-size: 12px; color: #fbbf24; font-weight: 700; margin-top: 2px; }
-
-    /* 活跃充值表单样式 */
-    .rule { background: rgba(245, 158, 11, 0.16); border-left: 3px solid #f59e0b; padding: 9px 11px; font-size: 12px; color: #fde68a; margin-bottom: 12px; border-radius: 4px; line-height: 1.5; }
-    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
-    .item { background: rgba(10, 15, 28, 0.8); border: 1.5px solid #374151; border-radius: 10px; padding: 10px 8px; text-align: center; position: relative; cursor: pointer; }
-    .item.full { grid-column: span 2; }
-    .item.active { border-color: #fbbf24 !important; background: rgba(245, 158, 11, 0.28) !important; }
-    .item.disabled { opacity: 0.45; }
-    .tag { position: absolute; top: -7px; right: 6px; background: #dc2626; color: #fff; font-size: 10px; padding: 1px 6px; border-radius: 4px; }
-    .u { font-size: 13px; font-weight: 700; }
-    .c { font-size: 20px; font-weight: 800; color: #fbbf24; }
-    .d { font-size: 11px; color: #9ca3af; }
-    label { display: block; font-size: 12px; margin: 10px 0 5px; color: #e5e7eb; }
-    input[type="text"] { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #4b5563; background: rgba(10, 15, 28, 0.9); color: #fff; font-size: 13px; }
-    .upload-box { border: 1.5px dashed #6b7280; border-radius: 8px; background: rgba(10, 15, 28, 0.85); padding: 14px; text-align: center; position: relative; }
-    .upload-box input[type="file"] { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 2; }
-    .preview-wrap { display: none; position: relative; z-index: 3; }
-    .preview-wrap img { max-width: 100%; max-height: 180px; border-radius: 6px; }
-    .del-img { position: absolute; top: 6px; right: 6px; background: #dc2626; color: #fff; border: none; border-radius: 4px; padding: 4px 8px; font-size: 11px; z-index: 4; }
-    .msg { margin-top: 10px; padding: 9px; border-radius: 8px; font-size: 12px; display: none; }
-    .ok { display: block; background: rgba(16, 185, 129, 0.25); color: #6ee7b7; border: 1px solid #10b981; }
-    .err { display: block; background: rgba(239, 68, 68, 0.25); color: #fca5a5; border: 1px solid #ef4444; }
-
-    .ref-box { background: rgba(10, 15, 28, 0.85); border: 1px solid #374151; border-radius: 10px; padding: 10px; display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 10px 0; }
-    .ref-link { font-size: 12px; color: #d1d5db; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .ref-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: center; margin-top: 10px; }
-    .stat-box { background: rgba(10, 15, 28, 0.75); padding: 10px; border-radius: 10px; border: 1px solid #374151; }
-    .stat-val { font-size: 18px; font-weight: 800; color: #fbbf24; }
-    .stat-lbl { font-size: 11px; color: #9ca3af; }
-
-    .hist-item { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid rgba(75, 85, 99, 0.4); font-size: 13px; }
-    .hist-plus { color: #34d399; font-weight: 700; }
-
-    .page { display: none; }
-    .page.active { display: block; }
-    .bottom-nav {
-      position: fixed; bottom: 0; left: 0; right: 0;
-      background: rgba(11, 17, 32, 0.96);
-      backdrop-filter: blur(12px);
-      border-top: 1px solid rgba(251, 191, 36, 0.25);
-      display: grid; grid-template-columns: repeat(5, 1fr);
-      padding: 8px 0 12px; z-index: 50;
-    }
-    .b-item { text-align: center; color: #9ca3af; font-size: 11px; cursor: pointer; user-select: none; }
-    .b-item.active { color: #fbbf24; font-weight: 700; }
-    .b-icon { font-size: 18px; display: block; margin-bottom: 2px; }
-
-    .modal-mask { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75); z-index: 100; align-items: center; justify-content: center; padding: 20px; }
-    .modal-box { background: #111827; border: 1.5px solid #fbbf24; border-radius: 18px; padding: 24px 20px; text-align: center; width: 100%; max-width: 300px; box-shadow: 0 10px 30px rgba(251, 191, 36, 0.35); animation: popIn 0.25s ease-out; }
-    @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-    .modal-pts { font-size: 34px; font-weight: 900; color: #fbbf24; margin: 8px 0; }
-    .modal-title { font-size: 14px; color: #e5e7eb; margin-bottom: 18px; }
-    .flying-coin { position: fixed; font-size: 22px; z-index: 200; pointer-events: none; transition: transform 0.75s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.75s ease-in; }
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+<title>🏆 鲸周奖励中心</title>
+<script src="https://telegram.org"></script>
+<script src="./config.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,sans-serif;-webkit-tap-highlight-color:transparent}
+body{background:#070b14 url('./IMG_1117.jpeg') center/cover no-repeat fixed;color:#f9fafb;padding:12px 12px 82px;min-height:100vh}
+.box{max-width:480px;margin:0 auto}
+.card{background:rgba(11,17,32,.84);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(251,191,36,.32);border-radius:15px;padding:14px;margin-bottom:12px;box-shadow:0 8px 24px rgba(0,0,0,.45)}
+.u-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.u-left{display:flex;align-items:center;gap:10px}
+.avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#fbbf24,#d97706);color:#111827;font-weight:900;font-size:18px;display:flex;align-items:center;justify-content:center}
+.uname{font-size:15px;font-weight:700}
+.ubadge{display:inline-block;font-size:11px;color:#fbbf24;background:rgba(251,191,36,.15);border:1px solid rgba(251,191,36,.35);padding:1px 8px;border-radius:10px;margin-top:2px}
+.mtag{font-size:10px;padding:2px 7px;border-radius:6px;background:rgba(16,185,129,.2);color:#6ee7b7;border:1px solid rgba(16,185,129,.4)}
+.nav3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.nbtn{display:flex;align-items:center;justify-content:center;gap:3px;background:rgba(251,191,36,.14);border:1px solid rgba(251,191,36,.38);color:#fde68a;text-decoration:none;padding:8px 4px;border-radius:9px;font-size:12px;font-weight:600}
+.pts-card{background:linear-gradient(135deg,rgba(245,158,11,.26),rgba(17,24,39,.92));border-color:rgba(251,191,36,.55)}
+.pts-main{font-size:34px;font-weight:900;color:#fbbf24;margin:4px 0 8px}
+.pts-sub{display:flex;justify-content:space-between;font-size:12px;color:#d1d5db;border-top:1px solid rgba(255,255,255,.1);padding-top:8px}
+.cgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:10px 0}
+.dbox{background:rgba(10,15,28,.85);border:1px solid #374151;border-radius:9px;padding:7px 4px;text-align:center}
+.dbox.d7{grid-column:span 2}
+.dbox.done{border-color:#10b981;background:rgba(16,185,129,.18);opacity:.7}
+.dbox.today{border-color:#fbbf24;background:rgba(245,158,11,.25)}
+.abtn{background:linear-gradient(90deg,#fbbf24,#d97706);color:#111827;border:none;border-radius:10px;padding:10px 14px;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap}
+.abtn:disabled{background:#374151;color:#9ca3af}
+.fbtn{width:100%;padding:12px;font-size:14px}
+.arow{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.titem{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(75,85,99,.4);gap:8px}
+.titem:last-child{border-bottom:none}
+.rule{background:rgba(245,158,11,.16);border-left:3px solid #f59e0b;padding:8px 10px;font-size:12px;color:#fde68a;margin-bottom:12px;border-radius:4px;line-height:1.5}
+.rgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px}
+.ritem{background:rgba(10,15,28,.82);border:1.5px solid #374151;border-radius:10px;padding:10px 6px;text-align:center;position:relative;cursor:pointer}
+.ritem.full{grid-column:span 2}
+.ritem.active{border-color:#fbbf24!important;background:rgba(245,158,11,.28)!important}
+.ritem.disabled{opacity:.45}
+.rtag{position:absolute;top:-7px;right:6px;background:#dc2626;color:#fff;font-size:10px;padding:1px 5px;border-radius:4px}
+label{display:block;font-size:12px;margin:10px 0 5px;color:#e5e7eb}
+input[type="text"]{width:100%;padding:10px;border-radius:8px;border:1px solid #4b5563;background:rgba(10,15,28,.9);color:#fff;font-size:13px}
+.ubox{border:1.5px dashed #6b7280;border-radius:8px;background:rgba(10,15,28,.85);padding:14px;text-align:center;position:relative}
+.ubox input{position:absolute;inset:0;width:100%;height:100%;opacity:0;z-index:2}
+.pwrap{display:none;position:relative;z-index:3}
+.pwrap img{max-width:100%;max-height:170px;border-radius:6px}
+.delimg{position:absolute;top:5px;right:5px;background:#dc2626;color:#fff;border:none;border-radius:4px;padding:4px 8px;font-size:11px;z-index:4}
+.msg{margin-top:10px;padding:9px;border-radius:8px;font-size:12px;display:none}
+.ok{display:block;background:rgba(16,185,129,.25);color:#6ee7b7;border:1px solid #10b981}
+.err{display:block;background:rgba(239,68,68,.25);color:#fca5a5;border:1px solid #ef4444}
+.refbox{background:rgba(10,15,28,.85);border:1px solid #374151;border-radius:10px;padding:9px;display:flex;align-items:center;justify-content:space-between;gap:8px;margin:10px 0}
+.refurl{font-size:12px;color:#d1d5db;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rstats{display:grid;grid-template-columns:1fr 1fr;gap:9px;text-align:center;margin-top:10px}
+.sbox{background:rgba(10,15,28,.75);padding:10px;border-radius:10px;border:1px solid #374151}
+.hitem{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid rgba(75,85,99,.4);font-size:13px}
+.page{display:none}.page.active{display:block}
+.bnav{position:fixed;bottom:0;left:0;right:0;background:rgba(11,17,32,.96);backdrop-filter:blur(12px);border-top:1px solid rgba(251,191,36,.25);display:grid;grid-template-columns:repeat(5,1fr);padding:8px 0 12px;z-index:50}
+.bitem{text-align:center;color:#9ca3af;font-size:11px;cursor:pointer}
+.bitem.active{color:#fbbf24;font-weight:700}
+.bicon{font-size:18px;display:block;margin-bottom:2px}
+.mmask{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:100;align-items:center;justify-content:center;padding:20px}
+.mbox{background:#111827;border:1.5px solid #fbbf24;border-radius:18px;padding:22px 18px;text-align:center;width:100%;max-width:290px}
+.coin{position:fixed;font-size:22px;z-index:200;pointer-events:none;transition:transform .75s ease-out,opacity .75s}
+</style>
 </head>
 <body>
-  <div class="box">
-    <div class="card">
-      <div class="user-row">
-        <div class="user-left">
-          <div class="avatar" id="uAvatar">U</div>
-          <div>
-            <div class="uname" id="uName">访客</div>
-            <div class="ubadge" id="uBadge">Lv.1 · 新人</div>
-          </div>
-        </div>
-        <span class="mode-tag" id="modeTag">演示模式</span>
+<div class="box">
+  <div class="card">
+    <div class="u-row">
+      <div class="u-left">
+        <div class="avatar" id="uAv">U</div>
+        <div><div class="uname" id="uNm">访客</div><div class="ubadge" id="uBg">Lv.1 · 新人</div></div>
       </div>
-      <div class="nav-grid">
-        <a class="nav-btn" href="https://t.me" onclick="openTg(event, 'https://t.me')">📢 官方频道</a>
-        <a class="nav-btn" href="https://t.me" onclick="openTg(event, 'https://t.me')">💬 交流群组</a>
+      <span class="mtag" id="mTag">演示模式</span>
+    </div>
+    <div class="nav3">
+      <a class="nbtn" href="https://t.me" onclick="goTg(event,'https://t.me')">📢 官方频道</a>
+      <a class="nbtn" href="https://t.me" onclick="goTg(event,'https://t.me')">💬 交流群组</a>
+      <a class="nbtn" href="https://t.me" onclick="goTg(event,'https://t.me')">🎧 在线客服</a>
+    </div>
+  </div>
+
+  <div id="page-home" class="page active">
+    <div class="card pts-card">
+      <div style="font-size:12px;color:#fde68a">我的可用积分</div>
+      <div class="pts-main" id="ptsTotal">0</div>
+      <div class="pts-sub"><span>今日已得 <b id="ptsToday">0</b></span><span>累计获得 <b id="ptsAll">0</b></span><span>已邀请 <b id="homeInv">0</b> 人</span></div>
+    </div>
+    <div class="card">
+      <div class="arow"><div><h3 style="font-size:15px">📅 每日签到（7天循环）</h3><p style="font-size:12px;color:#9ca3af">断签重置，第7天领大奖</p></div><span style="font-size:12px;color:#fbbf24;font-weight:700" id="stTxt">已连签 0 天</span></div>
+      <div class="cgrid" id="cGrid"></div>
+      <button class="abtn fbtn" id="cBtn" onclick="doCheckin(event)">立即签到领取积分</button>
+    </div>
+    <div class="card">
+      <div class="arow"><div><h3 style="font-size:15px">🎁 限时神秘宝箱</h3><p style="font-size:12px;color:#9ca3af" id="chDesc">每4小时可开一次，随机20-200积分</p></div><button class="abtn" id="chBtn" onclick="doChest(event)">开启宝箱</button></div>
+    </div>
+    <div class="card">
+      <div class="arow"><div><h3 style="font-size:15px">🌎 每个月活跃充值</h3><p style="font-size:12px;color:#9ca3af">每月15号、30号发放，最高领558c</p></div><button class="abtn" onclick="tab('recharge')">立即申请</button></div>
+    </div>
+  </div>
+
+  <div id="page-recharge" class="page">
+    <div class="card">
+      <div class="rule">📅 每月 <b>15号、30号</b> 统一发放<br>⚠️ <b>50u</b> 与 <b>200u</b> 档位每月仅限 <b>15号</b> 申请一次</div>
+      <div class="rgrid">
+        <div class="ritem" data-o15="1" onclick="pick(this,1,'👑 50u 领 38c (只能15号一次)')"><span class="rtag">只能15号一次</span><div style="font-size:13px;font-weight:700">👑 50u</div><div style="font-size:20px;font-weight:800;color:#fbbf24">38c</div><div style="font-size:11px;color:#9ca3af">每月15号限领一次</div></div>
+        <div class="ritem" data-o15="1" onclick="pick(this,1,'👑 200u 领 58c (只能15号一次)')"><span class="rtag">只能15号一次</span><div style="font-size:13px;font-weight:700">👑 200u</div><div style="font-size:20px;font-weight:800;color:#fbbf24">58c</div><div style="font-size:11px;color:#9ca3af">每月15号限领一次</div></div>
+        <div class="ritem" onclick="pick(this,0,'👑 500u 领 88c')"><div style="font-size:13px;font-weight:700">👑 500u</div><div style="font-size:20px;font-weight:800;color:#fbbf24">88c</div><div style="font-size:11px;color:#9ca3af">15号 / 30号发放</div></div>
+        <div class="ritem" onclick="pick(this,0,'👑 1500u 领 158c')"><div style="font-size:13px;font-weight:700">👑 1500u</div><div style="font-size:20px;font-weight:800;color:#fbbf24">158c</div><div style="font-size:11px;color:#9ca3af">15号 / 30号发放</div></div>
+        <div class="ritem" onclick="pick(this,0,'👑 3000u 领 238c')"><div style="font-size:13px;font-weight:700">👑 3000u</div><div style="font-size:20px;font-weight:800;color:#fbbf24">238c</div><div style="font-size:11px;color:#9ca3af">15号 / 30号发放</div></div>
+        <div class="ritem" onclick="pick(this,0,'👑 6000u 领 358c')"><div style="font-size:13px;font-weight:700">👑 6000u</div><div style="font-size:20px;font-weight:800;color:#fbbf24">358c</div><div style="font-size:11px;color:#9ca3af">15号 / 30号发放</div></div>
