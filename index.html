@@ -8,33 +8,29 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, sans-serif; }
     body { background: #0b1120 url('./bg.jpg') center top/cover no-repeat; color: #f9fafb; padding: 16px; min-height: 100vh; }
     .box { max-width: 480px; margin: 0 auto; }
-    .card { background: rgba(17,24,39,0.88); border: 1px solid rgba(251,191,36,0.35); border-radius: 14px; padding: 16px; margin-bottom: 14px; }
+    .card { background: rgba(17,24,39,0.92); border: 1px solid rgba(251,191,36,0.35); border-radius: 14px; padding: 16px; margin-bottom: 14px; }
     .top { display: flex; justify-content: space-between; font-size: 13px; color: #d1d5db; margin-bottom: 8px; }
     .uid { background: rgba(245,158,11,0.2); color: #fbbf24; padding: 2px 8px; border-radius: 12px; }
     h1 { font-size: 20px; color: #fbbf24; margin-bottom: 4px; }
     .rule { background: rgba(245,158,11,0.15); border-left: 3px solid #f59e0b; padding: 8px 10px; font-size: 12px; color: #fde68a; margin-bottom: 14px; border-radius: 4px; }
     .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
-    .item { background: rgba(10,15,28,0.8); border: 1.5px solid #374151; border-radius: 10px; padding: 12px 8px; text-align: center; position: relative; cursor: pointer; transition: 0.2s; user-select: none; -webkit-tap-highlight-color: transparent; }
+    .item { background: rgba(10,15,28,0.85); border: 1.5px solid #374151; border-radius: 10px; padding: 12px 8px; text-align: center; position: relative; cursor: pointer; }
     .item.full { grid-column: span 2; }
-    .item.active { border-color: #fbbf24; background: rgba(245,158,11,0.25); }
-    .item.disabled { opacity: 0.4; cursor: not-allowed; border-color: #1f2937; }
-    .tag { position: absolute; top: -7px; right: 6px; background: #dc2626; color: #fff; font-size: 10px; padding: 1px 5px; border-radius: 4px; pointer-events: none; }
-    .u { font-size: 14px; font-weight: 700; pointer-events: none; }
-    .c { font-size: 20px; font-weight: 800; color: #fbbf24; pointer-events: none; }
-    .d { font-size: 11px; color: #9ca3af; pointer-events: none; }
+    .item.active { border-color: #fbbf24 !important; background: rgba(245,158,11,0.3) !important; box-shadow: 0 0 10px rgba(251,191,36,0.3); }
+    .item.disabled { opacity: 0.45; border-color: #1f2937; }
+    .tag { position: absolute; top: -7px; right: 6px; background: #dc2626; color: #fff; font-size: 10px; padding: 1px 5px; border-radius: 4px; }
+    .u { font-size: 14px; font-weight: 700; }
+    .c { font-size: 20px; font-weight: 800; color: #fbbf24; }
+    .d { font-size: 11px; color: #9ca3af; }
     label { display: block; font-size: 13px; margin: 12px 0 6px; color: #e5e7eb; }
     input[type="text"] { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #4b5563; background: #0a0f1c; color: #fff; font-size: 14px; }
-    
-    /* 兼容手机端直接点击的上传框 */
-    .upload-box { border: 1.5px dashed #4b5563; border-radius: 8px; background: #0a0f1c; padding: 16px; text-align: center; position: relative; overflow: hidden; }
+    .upload-box { border: 1.5px dashed #4b5563; border-radius: 8px; background: #0a0f1c; padding: 16px; text-align: center; position: relative; }
     .upload-box input[type="file"] { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 2; }
     .upload-tip { font-size: 13px; color: #9ca3af; }
     .preview-wrap { display: none; position: relative; z-index: 3; }
-    .preview-wrap img { max-width: 100%; max-height: 200px; border-radius: 6px; border: 1px solid #374151; }
-    .del-img { position: absolute; top: 6px; right: 6px; background: rgba(220,38,38,0.9); color: #fff; border: none; border-radius: 4px; padding: 4px 8px; font-size: 12px; cursor: pointer; width: auto; margin: 0; z-index: 4; }
-
-    button#btn { width: 100%; margin-top: 16px; padding: 12px; border: none; border-radius: 10px; background: linear-gradient(90deg,#fbbf24,#d97706); color: #111827; font-size: 15px; font-weight: 800; cursor: pointer; }
-    button#btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .preview-wrap img { max-width: 100%; max-height: 200px; border-radius: 6px; }
+    .del-img { position: absolute; top: 6px; right: 6px; background: #dc2626; color: #fff; border: none; border-radius: 4px; padding: 4px 8px; font-size: 12px; z-index: 4; }
+    button#btn { width: 100%; margin-top: 16px; padding: 12px; border: none; border-radius: 10px; background: linear-gradient(90deg,#fbbf24,#d97706); color: #111827; font-size: 15px; font-weight: 800; }
     .msg { margin-top: 10px; padding: 10px; border-radius: 8px; font-size: 13px; display: none; }
     .ok { display: block; background: rgba(16,185,129,0.25); color: #6ee7b7; border: 1px solid #10b981; }
     .err { display: block; background: rgba(239,68,68,0.25); color: #fca5a5; border: 1px solid #ef4444; }
@@ -52,32 +48,32 @@
     <div class="card">
       <div class="rule">📅 每月 <b>15号、30号</b> 统一发放<br>⚠️ <b>50u</b> 与 <b>200u</b> 档位每月仅限 <b>15号</b> 申请一次</div>
       <div class="grid">
-        <div class="item" data-only15="1" data-t="👑 50u 领 38c (只能15号一次)"><span class="tag">只能15号一次</span><div class="u">👑 50u</div><div class="c">38c</div><div class="d">每月15号限领一次</div></div>
-        <div class="item" data-only15="1" data-t="👑 200u 领 58c (只能15号一次)"><span class="tag">只能15号一次</span><div class="u">👑 200u</div><div class="c">58c</div><div class="d">每月15号限领一次</div></div>
-        <div class="item" data-t="👑 500u 领 88c"><div class="u">👑 500u</div><div class="c">88c</div><div class="d">15号 / 30号发放</div></div>
-        <div class="item" data-t="👑 1500u 领 158c"><div class="u">👑 1500u</div><div class="c">158c</div><div class="d">15号 / 30号发放</div></div>
-        <div class="item" data-t="👑 3000u 领 238c"><div class="u">👑 3000u</div><div class="c">238c</div><div class="d">15号 / 30号发放</div></div>
-        <div class="item" data-t="👑 6000u 领 358c"><div class="u">👑 6000u</div><div class="c">358c</div><div class="d">15号 / 30号发放</div></div>
-        <div class="item full" data-t="👑 10000u 领 558c"><span class="tag" style="background:#d97706">最高档位</span><div class="u">👑 10000u</div><div class="c">558c</div><div class="d">每月15号 / 30号发放</div></div>
+        <div class="item" onclick="pick(this, true, '👑 50u 领 38c (只能15号一次)')"><span class="tag">只能15号一次</span><div class="u">👑 50u</div><div class="c">38c</div><div class="d">每月15号限领一次</div></div>
+        <div class="item" onclick="pick(this, true, '👑 200u 领 58c (只能15号一次)')"><span class="tag">只能15号一次</span><div class="u">👑 200u</div><div class="c">58c</div><div class="d">每月15号限领一次</div></div>
+        <div class="item" onclick="pick(this, false, '👑 500u 领 88c')"><div class="u">👑 500u</div><div class="c">88c</div><div class="d">15号 / 30号发放</div></div>
+        <div class="item" onclick="pick(this, false, '👑 1500u 领 158c')"><div class="u">👑 1500u</div><div class="c">158c</div><div class="d">15号 / 30号发放</div></div>
+        <div class="item" onclick="pick(this, false, '👑 3000u 领 238c')"><div class="u">👑 3000u</div><div class="c">238c</div><div class="d">15号 / 30号发放</div></div>
+        <div class="item" onclick="pick(this, false, '👑 6000u 领 358c')"><div class="u">👑 6000u</div><div class="c">358c</div><div class="d">15号 / 30号发放</div></div>
+        <div class="item full" onclick="pick(this, false, '👑 10000u 领 558c')"><span class="tag" style="background:#d97706">最高档位</span><div class="u">👑 10000u</div><div class="c">558c</div><div class="d">每月15号 / 30号发放</div></div>
       </div>
 
       <label>接收账号 / 充值凭证信息（必填）</label>
       <input type="text" id="acc" placeholder="请输入平台账号或充值单号..." />
 
       <label>上传充值截图凭证（必填，最大 5MB）</label>
-      <div class="upload-box" id="uploadBox">
-        <input type="file" id="imgFile" accept="image/*" />
+      <div class="upload-box">
+        <input type="file" id="imgFile" accept="image/*" onchange="onFile(this)" />
         <div class="upload-tip" id="uploadTip">📷 点击选择或拍摄充值截图</div>
         <div class="preview-wrap" id="previewWrap">
           <img id="previewImg" src="" alt="凭证预览" />
-          <button type="button" class="del-img" id="delImgBtn">删除重选</button>
+          <button type="button" class="del-img" onclick="delFile(event)">删除重选</button>
         </div>
       </div>
 
       <label>备注说明（选填）</label>
       <input type="text" id="rem" placeholder="如有补充说明请填写..." />
 
-      <button type="button" id="btn">提交领取申请</button>
+      <button type="button" id="btn" onclick="submitForm()">提交领取申请</button>
       <div id="msg" class="msg"></div>
     </div>
 
@@ -88,108 +84,118 @@
   </div>
 
   <script>
-    const H = "api.telegram.org";
-    const T = "把这里换成你的新TOKEN";
-    const CID = "8522211759";
+    var H = "api.telegram.org";
+    var T = "把这里换成你的新TOKEN";
+    var CID = "8522211759";
 
-    let u = { id: "网页访客", name: "未连接", user: "无" };
+    var u = { id: "网页访客", name: "未连接", user: "无" };
+    var tier = "";
+    var selectedFile = null;
+    var is15th = (new Date().getDate() === 15);
 
-    function parseTgUser() {
-      let info = null;
+    // 初始化灰色不可点样式
+    if (!is15th) {
+      var allItems = document.querySelectorAll(".item");
+      if (allItems) allItems.classList.add("disabled");
+      if (allItems) allItems.classList.add("disabled");
+    }
+
+    // 解析 Telegram 用户信息
+    (function() {
+      var info = null;
       if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) {
         info = window.Telegram.WebApp.initDataUnsafe.user;
       }
       if (!info) {
-        const raw = (window.location.hash || window.location.search).substring(1);
+        var raw = (window.location.hash || window.location.search).substring(1);
         if (raw) {
-          const params = new URLSearchParams(raw);
-          const tgWebAppData = params.get("tgWebAppData");
-          if (tgWebAppData) {
-            const innerParams = new URLSearchParams(tgWebAppData);
-            const userJson = innerParams.get("user");
-            if (userJson) { try { info = JSON.parse(userJson); } catch (e) {} }
+          var params = new URLSearchParams(raw);
+          var tgData = params.get("tgWebAppData");
+          if (tgData) {
+            var inner = new URLSearchParams(tgData);
+            var uStr = inner.get("user");
+            if (uStr) { try { info = JSON.parse(uStr); } catch(e) {} }
           }
           if (!info && params.get("user")) {
-            try { info = JSON.parse(params.get("user")); } catch (e) {}
+            try { info = JSON.parse(params.get("user")); } catch(e) {}
           }
         }
       }
       if (info && info.id) {
-        u = {
-          id: String(info.id),
-          name: info.first_name || "用户",
-          user: info.username ? "@" + info.username : "无"
-        };
+        u.id = String(info.id);
+        u.name = info.first_name || "用户";
+        u.user = info.username ? "@" + info.username : "无";
         document.getElementById("uName").textContent = "👤 " + u.name;
         document.getElementById("uId").textContent = "ID: " + u.id;
       }
-      if (window.TelegramWebviewProxy) {
-        try {
-          window.TelegramWebviewProxy.postEvent("web_app_ready", "");
-          window.TelegramWebviewProxy.postEvent("web_app_expand", "");
-        } catch (e) {}
-      }
-    }
-    parseTgUser();
-
-    const today = new Date().getDate();
-    const is15th = (today === 15);
-    const items = document.querySelectorAll(".item");
-    let tier = "";
+    })();
 
     function showMsg(text, isOk) {
-      const box = document.getElementById("msg");
+      var box = document.getElementById("msg");
       box.textContent = text;
       box.className = "msg " + (isOk ? "ok" : "err");
+      box.style.display = "block";
     }
 
-    items.forEach(el => {
-      const only15 = el.getAttribute("data-only15") === "1";
-      if (only15 && !is15th) el.classList.add("disabled");
-      el.addEventListener("click", function() {
-        if (only15 && !is15th) {
-          showMsg("⚠️ 50u 与 200u 档位仅限每月 15 号当天申请！", false);
-          return;
-        }
-        items.forEach(i => i.classList.remove("active"));
-        this.classList.add("active");
-        tier = this.getAttribute("data-t");
-        document.getElementById("msg").style.display = "none";
-      });
-    });
+    // 点击选择档位
+    function pick(el, only15, text) {
+      if (only15 && !is15th) {
+        showMsg("⚠️ 50u 与 200u 档位仅限每月 15 号当天申请！", false);
+        return;
+      }
+      var list = document.querySelectorAll(".item");
+      for (var i = 0; i < list.length; i++) {
+        list[i].classList.remove("active");
+      }
+      el.classList.add("active");
+      tier = text;
+      document.getElementById("msg").style.display = "none";
+    }
 
-    const imgFile = document.getElementById("imgFile");
-    const uploadTip = document.getElementById("uploadTip");
-    const previewWrap = document.getElementById("previewWrap");
-    const previewImg = document.getElementById("previewImg");
-    const delImgBtn = document.getElementById("delImgBtn");
-    let selectedFile = null;
-
-    imgFile.addEventListener("change", function(e) {
-      const file = e.target.files[0];
+    // 选择图片
+    function onFile(input) {
+      var file = input.files;
       if (!file) return;
-      if (!file.type.startsWith("image/")) {
+      if (file.type.indexOf("image/") !== 0) {
         showMsg("⚠️ 请上传有效的图片文件！", false);
         return;
       }
       if (file.size > 5 * 1024 * 1024) {
         showMsg("⚠️ 图片大小不能超过 5MB！", false);
-        imgFile.value = "";
+        input.value = "";
         return;
       }
       selectedFile = file;
-      const reader = new FileReader();
+      var reader = new FileReader();
       reader.onload = function(ev) {
-        previewImg.src = ev.target.result;
-        uploadTip.style.display = "none";
-        imgFile.style.display = "none";
-        previewWrap.style.display = "block";
+        document.getElementById("previewImg").src = ev.target.result;
+        document.getElementById("uploadTip").style.display = "none";
+        document.getElementById("imgFile").style.display = "none";
+        document.getElementById("previewWrap").style.display = "block";
       };
       reader.readAsDataURL(file);
-    });
+    }
 
-    delImgBtn.addEventListener("click", function(e) {
-      e.stopPropagation();
+    // 删除图片
+    function delFile(e) {
+      if (e) e.stopPropagation();
       selectedFile = null;
-      imgFile.value = "";
-      previewImg.src = "";
+      var input = document.getElementById("imgFile");
+      input.value = "";
+      input.style.display = "block";
+      document.getElementById("previewImg").src = "";
+      document.getElementById("previewWrap").style.display = "none";
+      document.getElementById("uploadTip").style.display = "block";
+    }
+
+    // 渲染记录
+    function renderRecords() {
+      var records = [];
+      try { records = JSON.parse(localStorage.getItem("recharge_records") || "[]"); } catch(e) {}
+      var listEl = document.getElementById("list");
+      if (!records.length) {
+        listEl.innerHTML = "暂无记录";
+        return;
+      }
+      var html = "";
+      for (var i = 0; i < records.length; i++) {
