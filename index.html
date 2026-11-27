@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>🌐 每个月活跃充值</title>
-  <script src="https://telegram.org"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, sans-serif; }
     body { background: #0b1120 url('./bg.jpg') center top/cover no-repeat; color: #f9fafb; padding: 16px; min-height: 100vh; }
@@ -15,24 +14,24 @@
     h1 { font-size: 20px; color: #fbbf24; margin-bottom: 4px; }
     .rule { background: rgba(245,158,11,0.15); border-left: 3px solid #f59e0b; padding: 8px 10px; font-size: 12px; color: #fde68a; margin-bottom: 14px; border-radius: 4px; }
     .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
-    .item { background: rgba(10,15,28,0.8); border: 1.5px solid #374151; border-radius: 10px; padding: 12px 8px; text-align: center; position: relative; cursor: pointer; transition: 0.2s; }
+    .item { background: rgba(10,15,28,0.8); border: 1.5px solid #374151; border-radius: 10px; padding: 12px 8px; text-align: center; position: relative; cursor: pointer; transition: 0.2s; user-select: none; -webkit-tap-highlight-color: transparent; }
     .item.full { grid-column: span 2; }
     .item.active { border-color: #fbbf24; background: rgba(245,158,11,0.25); }
     .item.disabled { opacity: 0.4; cursor: not-allowed; border-color: #1f2937; }
-    .tag { position: absolute; top: -7px; right: 6px; background: #dc2626; color: #fff; font-size: 10px; padding: 1px 5px; border-radius: 4px; }
-    .u { font-size: 14px; font-weight: 700; }
-    .c { font-size: 20px; font-weight: 800; color: #fbbf24; }
-    .d { font-size: 11px; color: #9ca3af; }
+    .tag { position: absolute; top: -7px; right: 6px; background: #dc2626; color: #fff; font-size: 10px; padding: 1px 5px; border-radius: 4px; pointer-events: none; }
+    .u { font-size: 14px; font-weight: 700; pointer-events: none; }
+    .c { font-size: 20px; font-weight: 800; color: #fbbf24; pointer-events: none; }
+    .d { font-size: 11px; color: #9ca3af; pointer-events: none; }
     label { display: block; font-size: 13px; margin: 12px 0 6px; color: #e5e7eb; }
     input[type="text"] { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #4b5563; background: #0a0f1c; color: #fff; font-size: 14px; }
     
-    /* 图片上传区域样式 */
-    .upload-box { border: 1.5px dashed #4b5563; border-radius: 8px; background: #0a0f1c; padding: 16px; text-align: center; cursor: pointer; transition: 0.2s; position: relative; }
-    .upload-box:hover { border-color: #fbbf24; }
+    /* 兼容手机端直接点击的上传框 */
+    .upload-box { border: 1.5px dashed #4b5563; border-radius: 8px; background: #0a0f1c; padding: 16px; text-align: center; position: relative; overflow: hidden; }
+    .upload-box input[type="file"] { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 2; }
     .upload-tip { font-size: 13px; color: #9ca3af; }
-    .preview-wrap { display: none; position: relative; margin-top: 8px; }
+    .preview-wrap { display: none; position: relative; z-index: 3; }
     .preview-wrap img { max-width: 100%; max-height: 200px; border-radius: 6px; border: 1px solid #374151; }
-    .del-img { position: absolute; top: 6px; right: 6px; background: rgba(220,38,38,0.9); color: #fff; border: none; border-radius: 4px; padding: 4px 8px; font-size: 12px; cursor: pointer; width: auto; margin: 0; }
+    .del-img { position: absolute; top: 6px; right: 6px; background: rgba(220,38,38,0.9); color: #fff; border: none; border-radius: 4px; padding: 4px 8px; font-size: 12px; cursor: pointer; width: auto; margin: 0; z-index: 4; }
 
     button#btn { width: 100%; margin-top: 16px; padding: 12px; border: none; border-radius: 10px; background: linear-gradient(90deg,#fbbf24,#d97706); color: #111827; font-size: 15px; font-weight: 800; cursor: pointer; }
     button#btn:disabled { opacity: 0.6; cursor: not-allowed; }
@@ -65,10 +64,9 @@
       <label>接收账号 / 充值凭证信息（必填）</label>
       <input type="text" id="acc" placeholder="请输入平台账号或充值单号..." />
 
-      <!-- 新增：图片上传控件 -->
       <label>上传充值截图凭证（必填，最大 5MB）</label>
       <div class="upload-box" id="uploadBox">
-        <input type="file" id="imgFile" accept="image/*" style="display:none" />
+        <input type="file" id="imgFile" accept="image/*" />
         <div class="upload-tip" id="uploadTip">📷 点击选择或拍摄充值截图</div>
         <div class="preview-wrap" id="previewWrap">
           <img id="previewImg" src="" alt="凭证预览" />
@@ -79,7 +77,7 @@
       <label>备注说明（选填）</label>
       <input type="text" id="rem" placeholder="如有补充说明请填写..." />
 
-      <button id="btn">提交领取申请</button>
+      <button type="button" id="btn">提交领取申请</button>
       <div id="msg" class="msg"></div>
     </div>
 
@@ -100,8 +98,6 @@
       let info = null;
       if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) {
         info = window.Telegram.WebApp.initDataUnsafe.user;
-        window.Telegram.WebApp.ready();
-        window.Telegram.WebApp.expand();
       }
       if (!info) {
         const raw = (window.location.hash || window.location.search).substring(1);
@@ -127,10 +123,15 @@
         document.getElementById("uName").textContent = "👤 " + u.name;
         document.getElementById("uId").textContent = "ID: " + u.id;
       }
+      if (window.TelegramWebviewProxy) {
+        try {
+          window.TelegramWebviewProxy.postEvent("web_app_ready", "");
+          window.TelegramWebviewProxy.postEvent("web_app_expand", "");
+        } catch (e) {}
+      }
     }
     parseTgUser();
 
-    // 档位选择逻辑
     const today = new Date().getDate();
     const is15th = (today === 15);
     const items = document.querySelectorAll(".item");
@@ -145,20 +146,18 @@
     items.forEach(el => {
       const only15 = el.getAttribute("data-only15") === "1";
       if (only15 && !is15th) el.classList.add("disabled");
-      el.onclick = () => {
+      el.addEventListener("click", function() {
         if (only15 && !is15th) {
           showMsg("⚠️ 50u 与 200u 档位仅限每月 15 号当天申请！", false);
           return;
         }
         items.forEach(i => i.classList.remove("active"));
-        el.classList.add("active");
-        tier = el.getAttribute("data-t");
+        this.classList.add("active");
+        tier = this.getAttribute("data-t");
         document.getElementById("msg").style.display = "none";
-      };
+      });
     });
 
-    // 图片上传与预览逻辑
-    const uploadBox = document.getElementById("uploadBox");
     const imgFile = document.getElementById("imgFile");
     const uploadTip = document.getElementById("uploadTip");
     const previewWrap = document.getElementById("previewWrap");
@@ -166,11 +165,7 @@
     const delImgBtn = document.getElementById("delImgBtn");
     let selectedFile = null;
 
-    uploadBox.onclick = (e) => {
-      if (e.target !== delImgBtn) imgFile.click();
-    };
-
-    imgFile.onchange = (e) => {
+    imgFile.addEventListener("change", function(e) {
       const file = e.target.files[0];
       if (!file) return;
       if (!file.type.startsWith("image/")) {
@@ -184,22 +179,17 @@
       }
       selectedFile = file;
       const reader = new FileReader();
-      reader.onload = (ev) => {
+      reader.onload = function(ev) {
         previewImg.src = ev.target.result;
         uploadTip.style.display = "none";
+        imgFile.style.display = "none";
         previewWrap.style.display = "block";
       };
       reader.readAsDataURL(file);
-    };
+    });
 
-    delImgBtn.onclick = (e) => {
+    delImgBtn.addEventListener("click", function(e) {
       e.stopPropagation();
       selectedFile = null;
       imgFile.value = "";
       previewImg.src = "";
-      previewWrap.style.display = "none";
-      uploadTip.style.display = "block";
-    };
-
-    // 加载本地历史记录
-    function renderRecords() {
